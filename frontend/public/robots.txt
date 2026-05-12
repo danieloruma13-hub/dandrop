@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Disallow: /dashboard
+Disallow: /profile
+
+Sitemap: https://dandrop.io/sitemap.xml
