@@ -6,7 +6,9 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY || "your-anon-key"
 );
 
-// ─── SVG ICONS ────────────────────────────────
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+// SVG Icons
 const Ic = ({ d, size = 20, color = "currentColor", fill = "none" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />
@@ -37,16 +39,17 @@ const DownloadIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d=
 const EyeIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 12m-3 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0" />;
 const ShareIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13" />;
 const BackIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M19 12H5 M12 19l-7-7 7-7" />;
-const SettingsIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />;
+const LinkIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />;
+const UnlinkIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71 M1 1l22 22" />;
 
-// ─── PLANS ────────────────────────────────────
+// Plans
 const PLANS = [
   { name: "starter", display: "Starter", price: 19, popular: false, desc: "Perfect for new dropshippers", features: ["1 Shopify store", "10 product imports/day", "Basic supplier monitoring", "Auto order fulfillment", "Email customer updates", "Profit dashboard", "3-day free trial"] },
   { name: "pro", display: "Pro", price: 49, popular: true, desc: "For growing dropshippers", features: ["3 Shopify stores", "50 product imports/day", "Advanced supplier alerts", "Auto order fulfillment", "Email + SMS updates", "Weekly profit reports", "Store scheduler", "Competitor tracking", "Priority support", "3-day free trial"] },
   { name: "business", display: "Business", price: 99, popular: false, desc: "For serious sellers scaling fast", features: ["Unlimited stores", "Unlimited imports", "Real-time supplier monitoring", "Auto order fulfillment", "Email + SMS + WhatsApp", "Custom profit reports", "Store scheduler", "Multi-store dashboard", "API access", "Dedicated support", "3-day free trial"] },
 ];
 
-// ─── AUTH CONTEXT ─────────────────────────────
+// Auth Context
 const AuthContext = createContext({});
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -99,7 +102,7 @@ const AuthProvider = ({ children }) => {
 };
 const useAuth = () => useContext(AuthContext);
 
-// ─── SHARED STYLES ────────────────────────────
+// Shared styles
 const S = {
   inp: { width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 14px", color: "#f0f4f8", fontFamily: "DM Sans,sans-serif", fontSize: "0.9rem", outline: "none", WebkitAppearance: "none", boxSizing: "border-box" },
   card: { background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 14 },
@@ -111,28 +114,27 @@ const S = {
   sub: { color: "#6b7a8d", fontSize: "0.82rem", marginBottom: 20 },
 };
 
-// ─── COMING SOON BANNER ───────────────────────
+// Coming Soon Banner
 const ComingSoon = ({ title, icon, desc }) => (
   <div style={{ textAlign: "center", padding: "40px 20px" }}>
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>{icon}</div>
     <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.3rem", color: "#f0f4f8", marginBottom: 8 }}>{title}</div>
     <p style={{ color: "#6b7a8d", fontSize: "0.86rem", lineHeight: 1.7, maxWidth: 280, margin: "0 auto 20px" }}>{desc}</p>
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.2)", color: "#00e5a0", padding: "8px 18px", borderRadius: 100, fontSize: "0.8rem", fontWeight: 600 }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00e5a0", display: "inline-block", animation: "pulse 2s infinite" }} />
-      Coming Soon
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#00e5a0", display: "inline-block", animation: "pulse 2s infinite" }} />Coming Soon
     </div>
-    <p style={{ color: "#6b7a8d", fontSize: "0.76rem", marginTop: 12 }}>Will be activated when Shopify and supplier APIs are connected.</p>
+    <p style={{ color: "#6b7a8d", fontSize: "0.76rem", marginTop: 12 }}>Will be activated when supplier API is connected.</p>
   </div>
 );
 
-// ─── TOGGLE ───────────────────────────────────
+// Toggle
 const Toggle = ({ on, toggle }) => (
   <button onClick={toggle} style={{ width: 44, height: 24, borderRadius: 100, border: "none", cursor: "pointer", background: on ? "#00e5a0" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.3s", flexShrink: 0 }}>
     <span style={{ position: "absolute", width: 18, height: 18, borderRadius: "50%", background: "white", top: 3, left: on ? 23 : 3, transition: "left 0.3s", display: "block" }} />
   </button>
 );
 
-// ─── NAV ──────────────────────────────────────
+// Nav
 const Nav = ({ setPage }) => {
   const { user, profile, signOut } = useAuth();
   const [open, setOpen] = useState(false);
@@ -167,7 +169,7 @@ const Nav = ({ setPage }) => {
   );
 };
 
-// ─── PRICING CARDS ────────────────────────────
+// Pricing Cards
 const PricingCards = ({ setPage }) => {
   const { user } = useAuth();
   const go = (plan) => {
@@ -202,7 +204,7 @@ const PricingCards = ({ setPage }) => {
   );
 };
 
-// ─── AUTH PAGES ───────────────────────────────
+// Auth Pages
 const SignupPage = ({ setPage }) => {
   const { signUp } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -286,7 +288,179 @@ const LoginPage = ({ setPage }) => {
   );
 };
 
-// ─── PRODUCT RESEARCH TAB ─────────────────────
+// Store Connection Tab
+const StoreConnectionTab = ({ profile, setTab }) => {
+  const [step, setStep] = useState("guide");
+  const [form, setForm] = useState({ domain: "", token: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [stores, setStores] = useState([]);
+
+  useEffect(() => { loadStores(); }, []);
+
+  const getToken = async () => (await supabase.auth.getSession()).data.session?.access_token;
+
+  const loadStores = async () => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/api/stores`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setStores(data.stores || []);
+        if (data.stores?.length > 0) setStep("connected");
+      }
+    } catch (err) {}
+  };
+
+  const connectStore = async () => {
+    if (!form.domain || !form.token) { setError("Please fill in all fields"); return; }
+    setError(""); setLoading(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/api/stores/connect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          shopifyDomain: form.domain.replace("https://", "").replace("http://", "").trim(),
+          accessToken: form.token.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Connection failed"); setLoading(false); return; }
+      setStores(prev => [...prev, data.store]);
+      setStep("connected");
+    } catch (err) {
+      setError("Could not connect. Make sure your backend is running.");
+    }
+    setLoading(false);
+  };
+
+  const disconnectStore = async (storeId) => {
+    try {
+      const token = await getToken();
+      await fetch(`${API}/api/stores/${storeId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      const updated = stores.filter(s => s.id !== storeId);
+      setStores(updated);
+      if (updated.length === 0) setStep("guide");
+    } catch (err) {}
+  };
+
+  if (step === "guide") return (
+    <div>
+      <div style={S.heading}>Connect Your Store</div>
+      <p style={S.sub}>Connect your Shopify store to unlock real data in your dashboard.</p>
+      <div style={{ ...S.card, border: "1px solid rgba(0,229,160,0.2)" }}>
+        <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>What you unlock:</div>
+        {[["Real revenue and profit in dashboard", true], ["Real orders pulled automatically", true], ["Invoices from real orders", true], ["Product price updates", true], ["Analytics with real data", true], ["Auto fulfillment (needs supplier API)", false]].map(([text, available]) => (
+          <div key={text} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <CheckIc s={15} c={available ? "#00e5a0" : "#6b7a8d"} />
+            <div style={{ fontSize: "0.85rem", color: available ? "#f0f4f8" : "#6b7a8d" }}>{text}</div>
+            {!available && <span style={{ background: "rgba(255,184,0,0.1)", color: "#ffb800", border: "1px solid rgba(255,184,0,0.2)", padding: "1px 7px", borderRadius: 100, fontSize: "0.63rem", fontWeight: 700, flexShrink: 0 }}>Soon</span>}
+          </div>
+        ))}
+      </div>
+      <div style={S.card}>
+        <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 16 }}>How to get your Shopify access token:</div>
+        {[
+          { n: "1", title: "Log into your Shopify admin", desc: "Go to yourstore.myshopify.com/admin" },
+          { n: "2", title: "Go to Settings", desc: "Click Settings in the bottom left corner" },
+          { n: "3", title: "Click Apps and sales channels", desc: "Then click Develop apps at the top right" },
+          { n: "4", title: "Allow custom app development", desc: "Click Allow custom app development if prompted" },
+          { n: "5", title: "Create a new app", desc: 'Click Create an app — name it "Dandrop"' },
+          { n: "6", title: "Configure API scopes", desc: "Click Configure Admin API scopes and tick: read_orders, write_orders, read_products, write_products, read_inventory, write_inventory, read_fulfillments, write_fulfillments" },
+          { n: "7", title: "Install the app", desc: "Click Save, then Install app, then Install" },
+          { n: "8", title: "Copy your access token", desc: "Copy your Admin API access token — you only see it once!" },
+        ].map(s => (
+          <div key={s.n} style={{ display: "flex", gap: 14, marginBottom: 16, alignItems: "flex-start" }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#00e5a0", flexShrink: 0 }}>{s.n}</div>
+            <div>
+              <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem", marginBottom: 3 }}>{s.title}</div>
+              <div style={{ color: "#6b7a8d", fontSize: "0.8rem", lineHeight: 1.6 }}>{s.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={() => setStep("form")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <LinkIc s={18} c="#000" />I have my token — Connect Now
+      </button>
+    </div>
+  );
+
+  if (step === "form") return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <button onClick={() => setStep("guide")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}>
+          <BackIc s={16} />Back
+        </button>
+        <div style={S.heading}>Connect Your Store</div>
+      </div>
+      <div style={S.card}>
+        <div style={{ background: "rgba(0,184,255,0.06)", border: "1px solid rgba(0,184,255,0.15)", borderRadius: 10, padding: "10px 14px", marginBottom: 18, fontSize: "0.81rem", color: "#6b7a8d", lineHeight: 1.6 }}>
+          Make sure you followed all 8 steps and copied your access token before continuing.
+        </div>
+        {error && <div style={S.err}>{error}</div>}
+        <div style={{ marginBottom: 14 }}>
+          <label style={S.label}>Shopify Store Domain</label>
+          <input placeholder="yourstore.myshopify.com" value={form.domain} onChange={e => setForm({ ...form, domain: e.target.value })} style={S.inp} autoCapitalize="none" autoCorrect="off" />
+          <div style={{ fontSize: "0.74rem", color: "#6b7a8d", marginTop: 5 }}>Do not include https://</div>
+        </div>
+        <div style={{ marginBottom: 20 }}>
+          <label style={S.label}>Admin API Access Token</label>
+          <input placeholder="shpat_xxxxxxxxxxxxxxxxxxxx" value={form.token} onChange={e => setForm({ ...form, token: e.target.value })} style={S.inp} autoCapitalize="none" autoCorrect="off" />
+          <div style={{ fontSize: "0.74rem", color: "#6b7a8d", marginTop: 5 }}>Starts with shpat_</div>
+        </div>
+        <button onClick={connectStore} disabled={loading} style={{ ...S.btn, opacity: loading ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <LinkIc s={18} c="#000" />{loading ? "Connecting..." : "Connect Store"}
+        </button>
+        <div style={{ background: "rgba(255,77,77,0.06)", border: "1px solid rgba(255,77,77,0.15)", borderRadius: 10, padding: "10px 14px", marginTop: 14, fontSize: "0.78rem", color: "#6b7a8d", lineHeight: 1.6 }}>
+          Your access token is stored securely. We never share it with anyone.
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={S.heading}>My Stores</div>
+      <p style={S.sub}>Your connected Shopify stores.</p>
+      {stores.map((s, i) => (
+        <div key={s.id || i} style={{ ...S.card, border: "1px solid rgba(0,229,160,0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <StoreIc s={22} c="#00e5a0" />
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, color: "#f0f4f8", fontSize: "0.92rem", marginBottom: 3 }}>{s.name || s.domain}</div>
+                <div style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>{s.domain || s.shopify_domain}</div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.2)", color: "#00e5a0", padding: "2px 8px", borderRadius: 100, fontSize: "0.7rem", fontWeight: 600, marginTop: 5 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#00e5a0", display: "inline-block", animation: "pulse 2s infinite" }} />Connected
+                </div>
+              </div>
+            </div>
+            <button onClick={() => disconnectStore(s.id)} style={{ background: "rgba(255,77,77,0.08)", border: "1px solid rgba(255,77,77,0.2)", color: "#ff4d4d", borderRadius: 8, padding: "7px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontSize: "0.78rem", fontFamily: "DM Sans,sans-serif" }}>
+              <UnlinkIc s={14} c="#ff4d4d" />Remove
+            </button>
+          </div>
+        </div>
+      ))}
+      <div style={S.card}>
+        <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 10 }}>Store connected successfully!</div>
+        <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.7, marginBottom: 14 }}>Your store data is being synced. Check your Overview tab to see real orders and revenue.</p>
+        <button onClick={() => setTab("overview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <HomeIc s={16} c="#000" />Go to Overview
+        </button>
+      </div>
+      {stores.length < 3 && (
+        <button onClick={() => setStep("form")} style={{ background: "transparent", border: "1px solid rgba(0,229,160,0.3)", color: "#00e5a0", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
+          <PlusIc s={16} c="#00e5a0" />Connect Another Store
+        </button>
+      )}
+    </div>
+  );
+};
+
+// Product Research Tab
 const ProductResearchTab = () => {
   const [keyword, setKeyword] = useState("");
   const [cost, setCost] = useState("");
@@ -299,7 +473,7 @@ const ProductResearchTab = () => {
     setLoading(true);
     try {
       const token = (await supabase.auth.getSession()).data.session?.access_token;
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000"}/api/trends/score`, {
+      const res = await fetch(`${API}/api/trends/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ productName: keyword, supplierCost: parseFloat(cost) || 10, shippingCost: 2 }),
@@ -308,18 +482,8 @@ const ProductResearchTab = () => {
       setResult(data);
       setHistory(prev => [{ ...data, keyword, timestamp: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
     } catch (err) {
-      // Fallback mock result if backend not running
       const score = Math.floor(Math.random() * 60) + 20;
-      const mock = {
-        productName: keyword,
-        winningScore: score,
-        isWinner: score >= 60,
-        verdict: score >= 70 ? "Hot Product" : score >= 60 ? "Good Product" : score >= 40 ? "Average" : "Avoid",
-        trendData: { trend: score > 60 ? "rising" : score > 40 ? "stable" : "falling", score },
-        margin: ((parseFloat(cost) || 10) * 1.5 / ((parseFloat(cost) || 10) * 2.5) * 100).toFixed(1),
-        recommendedPrice: ((parseFloat(cost) || 10) * 2.5).toFixed(2),
-        profit: ((parseFloat(cost) || 10) * 1.5).toFixed(2),
-      };
+      const mock = { productName: keyword, winningScore: score, isWinner: score >= 60, verdict: score >= 70 ? "Hot Product" : score >= 60 ? "Good Product" : score >= 40 ? "Average" : "Avoid", trendData: { trend: score > 60 ? "rising" : score > 40 ? "stable" : "falling", score }, margin: "35.0", recommendedPrice: ((parseFloat(cost) || 10) * 2.5).toFixed(2), profit: ((parseFloat(cost) || 10) * 1.5).toFixed(2) };
       setResult(mock);
       setHistory(prev => [{ ...mock, timestamp: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
     }
@@ -346,7 +510,6 @@ const ProductResearchTab = () => {
           <SearchIc s={18} c="#000" />{loading ? "Researching..." : "Research Product"}
         </button>
       </div>
-
       {result && (
         <div style={{ ...S.card, border: `1px solid ${verdictColor[result.verdict] || "#00e5a0"}44` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
@@ -360,14 +523,9 @@ const ProductResearchTab = () => {
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-            {[
-              ["Trend", result.trendData?.trend || "unknown", trendColor[result.trendData?.trend] || "#6b7a8d"],
-              ["Interest Score", result.trendData?.score || 0, "#00b8ff"],
-              ["Profit Margin", result.margin + "%", "#00e5a0"],
-              ["Recommended Price", "$" + result.recommendedPrice, "#f0f4f8"],
-            ].map(([label, value, color]) => (
+            {[["Trend", result.trendData?.trend || "unknown", trendColor[result.trendData?.trend] || "#6b7a8d"], ["Interest", result.trendData?.score || 0, "#00b8ff"], ["Margin", result.margin + "%", "#00e5a0"], ["Sell Price", "$" + result.recommendedPrice, "#f0f4f8"]].map(([label, value, color]) => (
               <div key={label} style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12 }}>
-                <div style={{ fontSize: "0.7rem", color: "#6b7a8d", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>{label}</div>
+                <div style={{ fontSize: "0.7rem", color: "#6b7a8d", marginBottom: 4, textTransform: "uppercase" }}>{label}</div>
                 <div style={{ fontWeight: 700, color, fontSize: "0.95rem", textTransform: "capitalize" }}>{value}</div>
               </div>
             ))}
@@ -375,15 +533,11 @@ const ProductResearchTab = () => {
           <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12 }}>
             <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginBottom: 6 }}>Recommendation</div>
             <div style={{ fontSize: "0.86rem", color: "#f0f4f8", lineHeight: 1.6 }}>
-              {result.winningScore >= 70 ? "This product is trending and has good profit potential. Consider adding it to your store soon." :
-                result.winningScore >= 60 ? "This product shows promise. Do more research before committing." :
-                  result.winningScore >= 40 ? "Average product. Competition may be high or demand is low." :
-                    "This product is declining or has very low demand. Avoid investing in it."}
+              {result.winningScore >= 70 ? "Trending product with good profit potential. Consider adding to your store soon." : result.winningScore >= 60 ? "Shows promise. Do more research before committing." : result.winningScore >= 40 ? "Average product. Competition may be high." : "Declining demand. Avoid investing in this product."}
             </div>
           </div>
         </div>
       )}
-
       {history.length > 0 && (
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>Recent Searches</div>
@@ -405,7 +559,7 @@ const ProductResearchTab = () => {
   );
 };
 
-// ─── PROFIT CALCULATOR TAB ────────────────────
+// Profit Calculator Tab
 const ProfitCalculatorTab = () => {
   const [form, setForm] = useState({ cost: "", shipping: "", selling: "", ads: "", platform: "2.9" });
   const [result, setResult] = useState(null);
@@ -424,11 +578,6 @@ const ProfitCalculatorTab = () => {
     setResult({ cost, shipping, selling, ads, platformFee: platformFee.toFixed(2), totalCost: totalCost.toFixed(2), profit: profit.toFixed(2), margin, roi });
   };
 
-  const saveCalc = () => {
-    if (!result) return;
-    setSaved(prev => [{ ...result, name: form.cost + " → " + form.selling, time: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
-  };
-
   const profitColor = result && parseFloat(result.profit) > 0 ? "#00e5a0" : "#ff4d4d";
 
   return (
@@ -437,7 +586,7 @@ const ProfitCalculatorTab = () => {
       <p style={S.sub}>Calculate your real profit before you start selling.</p>
       <div style={S.card}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-          {[["Supplier Cost ($)", "cost", "8.50"], ["Shipping Cost ($)", "shipping", "2.00"], ["Your Selling Price ($)", "selling", "24.99"], ["Ad Spend per Sale ($)", "ads", "3.00"]].map(([label, key, ph]) => (
+          {[["Supplier Cost ($)", "cost", "8.50"], ["Shipping Cost ($)", "shipping", "2.00"], ["Selling Price ($)", "selling", "24.99"], ["Ad Spend ($)", "ads", "3.00"]].map(([label, key, ph]) => (
             <div key={key}>
               <label style={S.label}>{label}</label>
               <input type="number" placeholder={ph} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} style={S.inp} />
@@ -445,8 +594,8 @@ const ProfitCalculatorTab = () => {
           ))}
         </div>
         <div style={{ marginBottom: 16 }}>
-          <label style={S.label}>Platform Fee (%)</label>
-          <select value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })} style={{ ...S.inp }}>
+          <label style={S.label}>Platform Fee</label>
+          <select value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })} style={S.inp}>
             <option value="2.9">Shopify — 2.9%</option>
             <option value="3.5">PayPal — 3.5%</option>
             <option value="5">Lemonsqueezy — 5%</option>
@@ -457,7 +606,6 @@ const ProfitCalculatorTab = () => {
           <DollarIc s={18} c="#000" />Calculate Profit
         </button>
       </div>
-
       {result && (
         <div style={{ ...S.card, border: `1px solid ${profitColor}33` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, paddingBottom: 14, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
@@ -470,53 +618,30 @@ const ProfitCalculatorTab = () => {
               <div style={{ fontFamily: "Syne,sans-serif", fontSize: "1.4rem", fontWeight: 800, color: profitColor }}>{result.margin}%</div>
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
             {[["Selling Price", "$" + result.selling, "#f0f4f8"], ["Supplier Cost", "-$" + result.cost, "#ff4d4d"], ["Shipping", "-$" + result.shipping, "#ff4d4d"], ["Ad Spend", "-$" + result.ads, "#ff4d4d"], ["Platform Fee", "-$" + result.platformFee, "#ff4d4d"], ["Total Cost", "-$" + result.totalCost, "#ffb800"]].map(([l, v, c]) => (
-              <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ fontSize: "0.84rem", color: "#6b7a8d" }}>{l}</div>
                 <div style={{ fontSize: "0.84rem", fontWeight: 600, color: c }}>{v}</div>
               </div>
             ))}
           </div>
-          <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12, marginBottom: 14 }}>
+          <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ fontSize: "0.82rem", color: "#6b7a8d" }}>ROI (Return on Investment)</div>
+              <div style={{ fontSize: "0.82rem", color: "#6b7a8d" }}>ROI</div>
               <div style={{ fontWeight: 700, color: profitColor }}>{result.roi}%</div>
             </div>
           </div>
-          <button onClick={saveCalc} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "10px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", width: "100%" }}>Save Calculation</button>
-        </div>
-      )}
-
-      {saved.length > 0 && (
-        <div style={S.card}>
-          <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 12 }}>Saved Calculations</div>
-          {saved.map((s, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < saved.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-              <div style={{ fontSize: "0.84rem", color: "#f0f4f8" }}>${s.selling} selling price</div>
-              <div style={{ color: parseFloat(s.profit) > 0 ? "#00e5a0" : "#ff4d4d", fontWeight: 600, fontSize: "0.84rem" }}>${s.profit} profit</div>
-            </div>
-          ))}
         </div>
       )}
     </div>
   );
 };
 
-// ─── SUPPLIER COMPARISON TAB ──────────────────
+// Supplier Comparison Tab
 const SupplierComparisonTab = () => {
-  const [suppliers, setSuppliers] = useState([
-    { name: "Supplier A", price: "", shipping: "", days: "", moq: "1" },
-    { name: "Supplier B", price: "", shipping: "", days: "", moq: "1" },
-  ]);
+  const [suppliers, setSuppliers] = useState([{ name: "Supplier A", price: "", shipping: "", days: "", moq: "1" }, { name: "Supplier B", price: "", shipping: "", days: "", moq: "1" }]);
   const [result, setResult] = useState(null);
-
-  const addSupplier = () => {
-    if (suppliers.length >= 5) return;
-    setSuppliers(prev => [...prev, { name: "Supplier " + String.fromCharCode(65 + prev.length), price: "", shipping: "", days: "", moq: "1" }]);
-  };
-
-  const removeSupplier = (i) => setSuppliers(prev => prev.filter((_, idx) => idx !== i));
 
   const compare = () => {
     const scored = suppliers.map(s => {
@@ -525,7 +650,7 @@ const SupplierComparisonTab = () => {
       const costScore = total > 0 ? Math.max(0, 100 - total * 5) : 0;
       const speedScore = Math.max(0, 100 - days * 5);
       const overall = ((costScore * 0.6) + (speedScore * 0.4)).toFixed(0);
-      return { ...s, total: total.toFixed(2), costScore: costScore.toFixed(0), speedScore: speedScore.toFixed(0), overall };
+      return { ...s, total: total.toFixed(2), overall };
     });
     const best = scored.reduce((a, b) => parseFloat(a.overall) > parseFloat(b.overall) ? a : b);
     setResult({ suppliers: scored, best: best.name });
@@ -538,11 +663,11 @@ const SupplierComparisonTab = () => {
       {suppliers.map((s, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <input value={s.name} onChange={e => setSuppliers(prev => prev.map((x, idx) => idx === i ? { ...x, name: e.target.value } : x))} style={{ ...S.inp, width: "auto", flex: 1, marginRight: 8 }} placeholder="Supplier name" />
-            {suppliers.length > 2 && <button onClick={() => removeSupplier(i)} style={{ background: "none", border: "none", color: "#ff4d4d", cursor: "pointer", display: "flex" }}><TrashIc s={18} c="#ff4d4d" /></button>}
+            <input value={s.name} onChange={e => setSuppliers(prev => prev.map((x, idx) => idx === i ? { ...x, name: e.target.value } : x))} style={{ ...S.inp, width: "auto", flex: 1, marginRight: 8 }} />
+            {suppliers.length > 2 && <button onClick={() => setSuppliers(prev => prev.filter((_, idx) => idx !== i))} style={{ background: "none", border: "none", color: "#ff4d4d", cursor: "pointer", display: "flex" }}><TrashIc s={18} c="#ff4d4d" /></button>}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {[["Product Price ($)", "price", "8.50"], ["Shipping ($)", "shipping", "2.00"], ["Delivery Days", "days", "7"], ["Min. Order (MOQ)", "moq", "1"]].map(([label, key, ph]) => (
+            {[["Price ($)", "price", "8.50"], ["Shipping ($)", "shipping", "2.00"], ["Delivery Days", "days", "7"], ["Min. Order", "moq", "1"]].map(([label, key, ph]) => (
               <div key={key}>
                 <label style={S.label}>{label}</label>
                 <input type="number" placeholder={ph} value={s[key]} onChange={e => setSuppliers(prev => prev.map((x, idx) => idx === i ? { ...x, [key]: e.target.value } : x))} style={S.inp} />
@@ -553,30 +678,29 @@ const SupplierComparisonTab = () => {
       ))}
       <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
         {suppliers.length < 5 && (
-          <button onClick={addSupplier} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-            <PlusIc s={16} />Add Supplier
+          <button onClick={() => setSuppliers(prev => [...prev, { name: "Supplier " + String.fromCharCode(65 + prev.length), price: "", shipping: "", days: "", moq: "1" }])} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <PlusIc s={16} />Add
           </button>
         )}
         <button onClick={compare} style={{ ...S.btn, flex: 2, padding: "11px 0" }}>Compare Now</button>
       </div>
-
       {result && (
         <div style={S.card}>
-          <div style={{ background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 10, padding: "12px 16px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
             <CheckIc s={18} c="#00e5a0" />
             <div>
-              <div style={{ fontWeight: 700, color: "#00e5a0", fontSize: "0.9rem" }}>Best Choice: {result.best}</div>
-              <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginTop: 2 }}>Based on price, shipping cost and delivery speed</div>
+              <div style={{ fontWeight: 700, color: "#00e5a0", fontSize: "0.9rem" }}>Best: {result.best}</div>
+              <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginTop: 2 }}>Based on price and delivery speed</div>
             </div>
           </div>
           {result.suppliers.map((s, i) => (
             <div key={i} style={{ background: s.name === result.best ? "rgba(0,229,160,0.04)" : "rgba(255,255,255,0.02)", border: s.name === result.best ? "1px solid rgba(0,229,160,0.2)" : "1px solid rgba(255,255,255,0.05)", borderRadius: 10, padding: 14, marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                 <div style={{ fontWeight: 600, color: s.name === result.best ? "#00e5a0" : "#f0f4f8", fontSize: "0.9rem" }}>{s.name} {s.name === result.best && "★"}</div>
                 <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: s.name === result.best ? "#00e5a0" : "#f0f4f8", fontSize: "1.1rem" }}>{s.overall}/100</div>
               </div>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                {[["Total Cost", "$" + s.total], ["Delivery", s.days + " days"], ["MOQ", s.moq + " units"]].map(([l, v]) => (
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                {[["Total", "$" + s.total], ["Delivery", s.days + " days"], ["MOQ", s.moq]].map(([l, v]) => (
                   <div key={l} style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>{l}: <span style={{ color: "#f0f4f8", fontWeight: 600 }}>{v}</span></div>
                 ))}
               </div>
@@ -588,177 +712,126 @@ const SupplierComparisonTab = () => {
   );
 };
 
-// ─── INVOICE GENERATOR TAB ────────────────────
+// Invoice Generator Tab
 const InvoiceGeneratorTab = ({ profile }) => {
-  const [step, setStep] = useState("form"); // form, preview
+  const [step, setStep] = useState("form");
   const [business, setBusiness] = useState({ name: profile?.full_name || "My Store", email: "", address: "", phone: "" });
   const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", country: "" });
   const [items, setItems] = useState([{ description: "", qty: 1, price: "" }]);
   const [order, setOrder] = useState({ id: "INV-" + Date.now().toString().slice(-6), tracking: "", shipping: "0" });
 
-  const addItem = () => setItems(prev => [...prev, { description: "", qty: 1, price: "" }]);
-  const removeItem = (i) => setItems(prev => prev.filter((_, idx) => idx !== i));
-  const updateItem = (i, key, val) => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, [key]: val } : x));
-
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.qty) || 0), 0);
   const shipping = parseFloat(order.shipping) || 0;
   const total = subtotal + shipping;
-
   const invoiceDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
   const downloadPDF = () => {
     const content = document.getElementById("invoice-preview");
     const printWindow = window.open("", "_blank");
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Invoice ${order.id}</title>
-          <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'DM Sans', sans-serif; background: #080b10; color: #f0f4f8; padding: 40px; }
-            @media print { body { padding: 20px; } }
-          </style>
-        </head>
-        <body>${content.innerHTML}</body>
-      </html>
-    `);
+    printWindow.document.write(`<html><head><title>Invoice ${order.id}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:sans-serif;background:#080b10;color:#f0f4f8;padding:32px;}</style></head><body>${content.innerHTML}</body></html>`);
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 500);
   };
 
   const shareLink = () => {
-    if (navigator.share) {
-      navigator.share({ title: "Invoice " + order.id, text: "Invoice from " + business.name });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
-    }
+    if (navigator.share) { navigator.share({ title: "Invoice " + order.id, text: "Invoice from " + business.name }); }
+    else { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }
   };
 
-  if (step === "preview") {
-    return (
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}>
-            <BackIc s={16} />Back
-          </button>
-          <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#f0f4f8" }}>Invoice Preview</div>
-        </div>
-        <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-          <button onClick={downloadPDF} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <DownloadIc s={16} c="#000" />Download PDF
-          </button>
-          <button onClick={shareLink} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <ShareIc s={16} />Share
-          </button>
-        </div>
-
-        {/* Invoice Preview */}
-        <div id="invoice-preview" style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden" }}>
-          {/* Header */}
-          <div style={{ background: "#080b10", padding: "24px 24px 20px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.6rem", color: "#00e5a0" }}>{business.name}</div>
-                <div style={{ color: "#6b7a8d", fontSize: "0.8rem", marginTop: 4 }}>{business.email}</div>
-                <div style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{business.phone}</div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.2rem", color: "#f0f4f8" }}>INVOICE</div>
-                <div style={{ color: "#00e5a0", fontWeight: 600, fontSize: "0.9rem" }}>#{order.id}</div>
-                <div style={{ color: "#6b7a8d", fontSize: "0.78rem", marginTop: 4 }}>{invoiceDate}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* From / To */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+  if (step === "preview") return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+        <button onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}>
+          <BackIc s={16} />Back
+        </button>
+        <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#f0f4f8" }}>Invoice Preview</div>
+      </div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        <button onClick={downloadPDF} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <DownloadIc s={16} c="#000" />Download PDF
+        </button>
+        <button onClick={shareLink} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <ShareIc s={16} />Share
+        </button>
+      </div>
+      <div id="invoice-preview" style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden" }}>
+        <div style={{ background: "#080b10", padding: "22px 22px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: 1, color: "#00e5a0", fontWeight: 600, marginBottom: 8 }}>From</div>
-              <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem" }}>{business.name}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem", marginTop: 3 }}>{business.address}</div>
+              <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.5rem", color: "#00e5a0" }}>{business.name}</div>
+              <div style={{ color: "#6b7a8d", fontSize: "0.78rem", marginTop: 3 }}>{business.email}</div>
             </div>
-            <div>
-              <div style={{ fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: 1, color: "#00e5a0", fontWeight: 600, marginBottom: 8 }}>Bill To</div>
-              <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem" }}>{customer.name}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem", marginTop: 3 }}>{customer.email}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{customer.address}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{customer.city}{customer.city && customer.country ? ", " : ""}{customer.country}</div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#f0f4f8" }}>INVOICE</div>
+              <div style={{ color: "#00e5a0", fontWeight: 600, fontSize: "0.88rem" }}>#{order.id}</div>
+              <div style={{ color: "#6b7a8d", fontSize: "0.76rem", marginTop: 3 }}>{invoiceDate}</div>
             </div>
           </div>
-
-          {/* Items */}
-          <div style={{ padding: "0 24px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: 8, padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              {["Item", "Qty", "Price", "Total"].map(h => <div key={h} style={{ fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: 1, color: "#6b7a8d", fontWeight: 600 }}>{h}</div>)}
-            </div>
-            {items.map((item, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: 8, padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
-                <div style={{ fontSize: "0.86rem", color: "#f0f4f8" }}>{item.description || "Item " + (i + 1)}</div>
-                <div style={{ fontSize: "0.84rem", color: "#6b7a8d", textAlign: "center" }}>{item.qty}</div>
-                <div style={{ fontSize: "0.84rem", color: "#6b7a8d", textAlign: "right" }}>${parseFloat(item.price || 0).toFixed(2)}</div>
-                <div style={{ fontSize: "0.84rem", color: "#f0f4f8", fontWeight: 600, textAlign: "right" }}>${((parseFloat(item.price) || 0) * (parseInt(item.qty) || 0)).toFixed(2)}</div>
-              </div>
-            ))}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, padding: "16px 22px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <div>
+            <div style={{ fontSize: "0.66rem", textTransform: "uppercase", letterSpacing: 1, color: "#00e5a0", fontWeight: 600, marginBottom: 6 }}>From</div>
+            <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.86rem" }}>{business.name}</div>
+            <div style={{ color: "#6b7a8d", fontSize: "0.78rem", marginTop: 2 }}>{business.address}</div>
           </div>
-
-          {/* Totals */}
-          <div style={{ padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <div style={{ width: "60%" }}>
+          <div>
+            <div style={{ fontSize: "0.66rem", textTransform: "uppercase", letterSpacing: 1, color: "#00e5a0", fontWeight: 600, marginBottom: 6 }}>Bill To</div>
+            <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.86rem" }}>{customer.name}</div>
+            <div style={{ color: "#6b7a8d", fontSize: "0.78rem", marginTop: 2 }}>{customer.email}</div>
+            <div style={{ color: "#6b7a8d", fontSize: "0.78rem" }}>{customer.address}</div>
+            <div style={{ color: "#6b7a8d", fontSize: "0.78rem" }}>{customer.city}{customer.city && customer.country ? ", " : ""}{customer.country}</div>
+          </div>
+        </div>
+        <div style={{ padding: "0 22px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: 8, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            {["Item", "Qty", "Price", "Total"].map(h => <div key={h} style={{ fontSize: "0.66rem", textTransform: "uppercase", letterSpacing: 1, color: "#6b7a8d", fontWeight: 600 }}>{h}</div>)}
+          </div>
+          {items.map((item, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: 8, padding: "11px 0", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
+              <div style={{ fontSize: "0.84rem", color: "#f0f4f8" }}>{item.description || "Item " + (i + 1)}</div>
+              <div style={{ fontSize: "0.82rem", color: "#6b7a8d", textAlign: "center" }}>{item.qty}</div>
+              <div style={{ fontSize: "0.82rem", color: "#6b7a8d", textAlign: "right" }}>${parseFloat(item.price || 0).toFixed(2)}</div>
+              <div style={{ fontSize: "0.82rem", color: "#f0f4f8", fontWeight: 600, textAlign: "right" }}>${((parseFloat(item.price) || 0) * (parseInt(item.qty) || 0)).toFixed(2)}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "14px 22px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ width: "55%" }}>
+              {shipping > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <div style={{ fontSize: "0.84rem", color: "#6b7a8d" }}>Subtotal</div>
-                  <div style={{ fontSize: "0.84rem", color: "#f0f4f8" }}>${subtotal.toFixed(2)}</div>
+                  <div style={{ fontSize: "0.82rem", color: "#6b7a8d" }}>Shipping</div>
+                  <div style={{ fontSize: "0.82rem", color: "#f0f4f8" }}>${shipping.toFixed(2)}</div>
                 </div>
-                {shipping > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                    <div style={{ fontSize: "0.84rem", color: "#6b7a8d" }}>Shipping</div>
-                    <div style={{ fontSize: "0.84rem", color: "#f0f4f8" }}>${shipping.toFixed(2)}</div>
-                  </div>
-                )}
-                <div style={{ display: "flex", justifyContent: "space-between", background: "#00e5a0", borderRadius: 8, padding: "10px 12px", marginTop: 8 }}>
-                  <div style={{ fontWeight: 700, color: "#000", fontSize: "0.9rem" }}>TOTAL</div>
-                  <div style={{ fontWeight: 800, color: "#000", fontFamily: "Syne,sans-serif", fontSize: "1rem" }}>${total.toFixed(2)}</div>
-                </div>
+              )}
+              <div style={{ display: "flex", justifyContent: "space-between", background: "#00e5a0", borderRadius: 8, padding: "9px 12px" }}>
+                <div style={{ fontWeight: 700, color: "#000", fontSize: "0.88rem" }}>TOTAL</div>
+                <div style={{ fontWeight: 800, color: "#000", fontFamily: "Syne,sans-serif", fontSize: "0.98rem" }}>${total.toFixed(2)}</div>
               </div>
             </div>
           </div>
-
-          {/* Tracking */}
-          {order.tracking && (
-            <div style={{ padding: "14px 24px", background: "rgba(0,229,160,0.04)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-              <div style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>Tracking Number: <span style={{ color: "#00e5a0", fontWeight: 600 }}>{order.tracking}</span></div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div style={{ padding: "14px 24px", borderTop: "1px solid rgba(255,255,255,0.07)", textAlign: "center" }}>
-            <div style={{ fontSize: "0.76rem", color: "#6b7a8d" }}>Thank you for your purchase! Questions? Contact {business.email || "support@" + business.name.toLowerCase().replace(/\s/g, "") + ".com"}</div>
-            <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.2)", marginTop: 4 }}>Powered by Dandrop</div>
+        </div>
+        {order.tracking && (
+          <div style={{ padding: "12px 22px", background: "rgba(0,229,160,0.04)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ fontSize: "0.76rem", color: "#6b7a8d" }}>Tracking: <span style={{ color: "#00e5a0", fontWeight: 600 }}>{order.tracking}</span></div>
           </div>
+        )}
+        <div style={{ padding: "12px 22px", borderTop: "1px solid rgba(255,255,255,0.07)", textAlign: "center" }}>
+          <div style={{ fontSize: "0.74rem", color: "#6b7a8d" }}>Thank you! Questions? {business.email}</div>
+          <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.2)", marginTop: 3 }}>Powered by Dandrop</div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div>
       <div style={S.heading}>Invoice Generator</div>
       <p style={S.sub}>Create professional branded invoices for your customers.</p>
-
-      {/* Business Info */}
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><StoreIc s={16} c="#00e5a0" />Your Business</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-          {[["Business Name", "name", "My Store"], ["Email", "email", "hello@mystore.com"]].map(([label, key, ph]) => (
-            <div key={key}>
-              <label style={S.label}>{label}</label>
-              <input placeholder={ph} value={business[key]} onChange={e => setBusiness({ ...business, [key]: e.target.value })} style={S.inp} />
-            </div>
-          ))}
-        </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {[["Address", "address", "123 Main St"], ["Phone", "phone", "+1 234 567 8900"]].map(([label, key, ph]) => (
+          {[["Business Name", "name", "My Store"], ["Email", "email", "hello@mystore.com"], ["Address", "address", "123 Main St"], ["Phone", "phone", "+1 234 567 8900"]].map(([label, key, ph]) => (
             <div key={key}>
               <label style={S.label}>{label}</label>
               <input placeholder={ph} value={business[key]} onChange={e => setBusiness({ ...business, [key]: e.target.value })} style={S.inp} />
@@ -766,8 +839,6 @@ const InvoiceGeneratorTab = ({ profile }) => {
           ))}
         </div>
       </div>
-
-      {/* Customer Info */}
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><UserIc s={16} c="#00e5a0" />Customer Details</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
@@ -791,41 +862,37 @@ const InvoiceGeneratorTab = ({ profile }) => {
           ))}
         </div>
       </div>
-
-      {/* Order Items */}
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><BoxIc s={16} c="#00e5a0" />Order Items</div>
         {items.map((item, i) => (
           <div key={i} style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>Item {i + 1}</div>
-              {items.length > 1 && <button onClick={() => removeItem(i)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}><TrashIc s={16} c="#ff4d4d" /></button>}
+              {items.length > 1 && <button onClick={() => setItems(prev => prev.filter((_, idx) => idx !== i))} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}><TrashIc s={16} c="#ff4d4d" /></button>}
             </div>
             <div style={{ marginBottom: 8 }}>
-              <input placeholder="Product name / description" value={item.description} onChange={e => updateItem(i, "description", e.target.value)} style={S.inp} />
+              <input placeholder="Product name" value={item.description} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, description: e.target.value } : x))} style={S.inp} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               <div>
-                <label style={S.label}>Quantity</label>
-                <input type="number" value={item.qty} onChange={e => updateItem(i, "qty", e.target.value)} style={S.inp} min="1" />
+                <label style={S.label}>Qty</label>
+                <input type="number" value={item.qty} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, qty: e.target.value } : x))} style={S.inp} min="1" />
               </div>
               <div>
                 <label style={S.label}>Price ($)</label>
-                <input type="number" placeholder="0.00" value={item.price} onChange={e => updateItem(i, "price", e.target.value)} style={S.inp} />
+                <input type="number" placeholder="0.00" value={item.price} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, price: e.target.value } : x))} style={S.inp} />
               </div>
             </div>
           </div>
         ))}
-        <button onClick={addItem} style={{ background: "transparent", border: "1px dashed rgba(255,255,255,0.15)", color: "#6b7a8d", borderRadius: 10, padding: "10px 0", fontWeight: 600, fontSize: "0.86rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+        <button onClick={() => setItems(prev => [...prev, { description: "", qty: 1, price: "" }])} style={{ background: "transparent", border: "1px dashed rgba(255,255,255,0.15)", color: "#6b7a8d", borderRadius: 10, padding: "10px 0", fontWeight: 600, fontSize: "0.86rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
           <PlusIc s={16} />Add Item
         </button>
       </div>
-
-      {/* Order Details */}
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><FileIc s={16} c="#00e5a0" />Order Details</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {[["Invoice/Order ID", "id", "INV-001"], ["Tracking Number", "tracking", "Optional"]].map(([label, key, ph]) => (
+          {[["Invoice ID", "id", "INV-001"], ["Tracking Number", "tracking", "Optional"]].map(([label, key, ph]) => (
             <div key={key}>
               <label style={S.label}>{label}</label>
               <input placeholder={ph} value={order[key]} onChange={e => setOrder({ ...order, [key]: e.target.value })} style={S.inp} />
@@ -837,13 +904,12 @@ const InvoiceGeneratorTab = ({ profile }) => {
           </div>
           <div style={{ display: "flex", alignItems: "flex-end" }}>
             <div style={{ background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.15)", borderRadius: 10, padding: "12px 14px", width: "100%" }}>
-              <div style={{ fontSize: "0.72rem", color: "#6b7a8d", marginBottom: 2 }}>Total Amount</div>
+              <div style={{ fontSize: "0.72rem", color: "#6b7a8d", marginBottom: 2 }}>Total</div>
               <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: "#00e5a0", fontSize: "1.2rem" }}>${total.toFixed(2)}</div>
             </div>
           </div>
         </div>
       </div>
-
       <button onClick={() => setStep("preview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
         <EyeIc s={18} c="#000" />Preview Invoice
       </button>
@@ -851,12 +917,9 @@ const InvoiceGeneratorTab = ({ profile }) => {
   );
 };
 
-// ─── STORE SCHEDULER TAB ─────────────────────
+// Store Scheduler Tab
 const SchedulerTab = () => {
-  const [events, setEvents] = useState([
-    { id: 1, title: "Product Launch - Wireless Earbuds", date: "2025-06-15", type: "launch", status: "upcoming", notes: "Check stock before launching" },
-    { id: 2, title: "Weekend Sale - 20% Off", date: "2025-06-20", type: "sale", status: "upcoming", notes: "Update all product prices" },
-  ]);
+  const [events, setEvents] = useState([{ id: 1, title: "Product Launch — Wireless Earbuds", date: "2025-06-15", type: "launch", status: "upcoming", notes: "Check stock before launching" }]);
   const [form, setForm] = useState({ title: "", date: "", type: "launch", notes: "" });
   const [adding, setAdding] = useState(false);
 
@@ -867,9 +930,6 @@ const SchedulerTab = () => {
     setAdding(false);
   };
 
-  const deleteEvent = (id) => setEvents(prev => prev.filter(e => e.id !== id));
-  const toggleStatus = (id) => setEvents(prev => prev.map(e => e.id === id ? { ...e, status: e.status === "done" ? "upcoming" : "done" } : e));
-
   const typeColor = { launch: "#00e5a0", sale: "#00b8ff", restock: "#ffb800", pause: "#ff4d4d", other: "#6b7a8d" };
   const upcoming = events.filter(e => e.status === "upcoming").sort((a, b) => new Date(a.date) - new Date(b.date));
   const done = events.filter(e => e.status === "done");
@@ -878,13 +938,12 @@ const SchedulerTab = () => {
     <div>
       <div style={S.heading}>Store Scheduler</div>
       <p style={S.sub}>Plan your product launches, sales and campaigns in advance.</p>
-
       {adding ? (
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>New Event</div>
           <div style={{ marginBottom: 12 }}>
-            <label style={S.label}>Event Title</label>
-            <input placeholder="e.g. Product Launch — Wireless Earbuds" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={S.inp} />
+            <label style={S.label}>Title</label>
+            <input placeholder="e.g. Product Launch" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={S.inp} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
             <div>
@@ -895,7 +954,7 @@ const SchedulerTab = () => {
               <label style={S.label}>Type</label>
               <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={S.inp}>
                 <option value="launch">Product Launch</option>
-                <option value="sale">Sale / Promotion</option>
+                <option value="sale">Sale / Promo</option>
                 <option value="restock">Restock</option>
                 <option value="pause">Pause Product</option>
                 <option value="other">Other</option>
@@ -903,8 +962,8 @@ const SchedulerTab = () => {
             </div>
           </div>
           <div style={{ marginBottom: 14 }}>
-            <label style={S.label}>Notes (optional)</label>
-            <textarea placeholder="Any notes or reminders..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...S.inp, minHeight: 80, resize: "vertical" }} />
+            <label style={S.label}>Notes</label>
+            <textarea placeholder="Any reminders..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...S.inp, minHeight: 70, resize: "vertical" }} />
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={addEvent} style={{ ...S.btn, flex: 2, padding: "11px 0" }}>Save Event</button>
@@ -916,13 +975,12 @@ const SchedulerTab = () => {
           <PlusIc s={18} c="#000" />Add New Event
         </button>
       )}
-
       {upcoming.length > 0 && (
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>Upcoming ({upcoming.length})</div>
           {upcoming.map(e => (
             <div key={e.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ flex: 1, marginRight: 8 }}>
                   <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.9rem", marginBottom: 4 }}>{e.title}</div>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -932,44 +990,36 @@ const SchedulerTab = () => {
                   {e.notes && <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginTop: 6 }}>{e.notes}</div>}
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => toggleStatus(e.id)} style={{ background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 8, padding: "6px 8px", cursor: "pointer", display: "flex" }}><CheckIc s={14} c="#00e5a0" /></button>
-                  <button onClick={() => deleteEvent(e.id)} style={{ background: "rgba(255,77,77,0.1)", border: "1px solid rgba(255,77,77,0.2)", borderRadius: 8, padding: "6px 8px", cursor: "pointer", display: "flex" }}><TrashIc s={14} c="#ff4d4d" /></button>
+                  <button onClick={() => setEvents(prev => prev.map(ev => ev.id === e.id ? { ...ev, status: "done" } : ev))} style={{ background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 8, padding: "6px 8px", cursor: "pointer", display: "flex" }}><CheckIc s={14} c="#00e5a0" /></button>
+                  <button onClick={() => setEvents(prev => prev.filter(ev => ev.id !== e.id))} style={{ background: "rgba(255,77,77,0.1)", border: "1px solid rgba(255,77,77,0.2)", borderRadius: 8, padding: "6px 8px", cursor: "pointer", display: "flex" }}><TrashIc s={14} c="#ff4d4d" /></button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
-
       {done.length > 0 && (
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#6b7a8d", marginBottom: 14 }}>Completed ({done.length})</div>
           {done.map(e => (
-            <div key={e.id} style={{ background: "rgba(255,255,255,0.01)", borderRadius: 10, padding: 12, marginBottom: 8, opacity: 0.6 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ fontSize: "0.86rem", color: "#6b7a8d", textDecoration: "line-through" }}>{e.title}</div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => toggleStatus(e.id)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "5px 8px", cursor: "pointer", color: "#6b7a8d", fontSize: "0.72rem", fontFamily: "DM Sans,sans-serif" }}>Undo</button>
-                  <button onClick={() => deleteEvent(e.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}><TrashIc s={14} c="#6b7a8d" /></button>
-                </div>
-              </div>
+            <div key={e.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", opacity: 0.6 }}>
+              <div style={{ fontSize: "0.86rem", color: "#6b7a8d", textDecoration: "line-through" }}>{e.title}</div>
+              <button onClick={() => setEvents(prev => prev.filter(ev => ev.id !== e.id))} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}><TrashIc s={14} c="#6b7a8d" /></button>
             </div>
           ))}
         </div>
       )}
-
       {events.length === 0 && !adding && (
         <div style={{ textAlign: "center", padding: "40px 0" }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}><CalIc s={40} c="#6b7a8d" /></div>
           <div style={{ color: "#6b7a8d", fontSize: "0.86rem" }}>No events scheduled yet.</div>
-          <div style={{ color: "#6b7a8d", fontSize: "0.78rem", marginTop: 6 }}>Add your first product launch or promotion above.</div>
         </div>
       )}
     </div>
   );
 };
 
-// ─── PROFILE PAGE ─────────────────────────────
+// Profile Page
 const ProfilePage = ({ setPage }) => {
   const { user, profile, updateProfile, signOut } = useAuth();
   const [form, setForm] = useState({ full_name: profile?.full_name || "", business_name: profile?.business_name || "", phone: profile?.phone || "" });
@@ -1019,7 +1069,7 @@ const ProfilePage = ({ setPage }) => {
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.97rem", color: "#f0f4f8", marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}><UserIc s={16} c="#00e5a0" />Personal Information</div>
           <p style={{ color: "#6b7a8d", fontSize: "0.8rem", marginBottom: 16 }}>Tap your avatar above to change your profile picture.</p>
-          {saved && <div style={S.ok}>Profile saved successfully!</div>}
+          {saved && <div style={S.ok}>Profile saved!</div>}
           {[["Full Name", "text", "Your full name", "full_name"], ["Business Name", "text", "Your store name", "business_name"], ["Phone", "tel", "+1 234 567 8900", "phone"]].map(([label, type, ph, key]) => (
             <div key={key} style={{ marginBottom: 14 }}>
               <label style={S.label}>{label}</label>
@@ -1046,7 +1096,7 @@ const ProfilePage = ({ setPage }) => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.9rem", marginBottom: 4 }}>{profile?.subscription ? profile.subscription.plans?.display_name + " Plan" : profile?.trialActive ? "Free Trial" : "No Active Plan"}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{profile?.trialActive ? profile.daysLeft + " day" + (profile.daysLeft !== 1 ? "s" : "") + " left" : profile?.subscription ? "Active subscription" : "Trial expired"}</div>
+              <div style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{profile?.trialActive ? profile.daysLeft + " day" + (profile.daysLeft !== 1 ? "s" : "") + " left" : profile?.subscription ? "Active" : "Expired"}</div>
             </div>
             <button onClick={() => setPage("pricing")} style={{ background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif" }}>{profile?.subscription ? "Manage" : "Upgrade"}</button>
           </div>
@@ -1063,19 +1113,19 @@ const ProfilePage = ({ setPage }) => {
   );
 };
 
-// ─── PAYWALL ──────────────────────────────────
+// Paywall
 const PaywallPage = ({ setPage }) => (
   <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "80px 20px 40px", background: "#080b10" }}>
     <div style={{ textAlign: "center", maxWidth: 500, width: "100%" }}>
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}><ShieldIc s={56} c="#ff4d4d" /></div>
       <div style={{ fontFamily: "Syne,sans-serif", fontSize: "1.8rem", fontWeight: 800, letterSpacing: -1, marginBottom: 10, color: "#f0f4f8" }}>Your 3-day trial has ended</div>
-      <p style={{ color: "#6b7a8d", marginBottom: 32, lineHeight: 1.7, fontSize: "0.92rem" }}>Choose a plan to keep your store running on autopilot. Cancel anytime.</p>
+      <p style={{ color: "#6b7a8d", marginBottom: 32, lineHeight: 1.7, fontSize: "0.92rem" }}>Choose a plan to keep your store running on autopilot.</p>
       <PricingCards setPage={setPage} />
     </div>
   </div>
 );
 
-// ─── DASHBOARD ────────────────────────────────
+// Dashboard
 const DashboardPage = ({ setPage }) => {
   const { profile, signOut } = useAuth();
   const [tab, setTab] = useState("overview");
@@ -1085,6 +1135,7 @@ const DashboardPage = ({ setPage }) => {
 
   const navItems = [
     ["overview", <HomeIc />, "Overview"],
+    ["store", <LinkIc />, "My Store"],
     ["research", <SearchIc />, "Research"],
     ["calculator", <DollarIc />, "Calculator"],
     ["suppliers", <StoreIc />, "Suppliers"],
@@ -1094,7 +1145,7 @@ const DashboardPage = ({ setPage }) => {
     ["analytics", <ChartIc />, "Analytics"],
   ];
 
-  const tabLabels = { overview: "Overview", research: "Product Research", calculator: "Profit Calculator", suppliers: "Supplier Comparison", scheduler: "Store Scheduler", invoices: "Invoice Generator", orders: "Orders", analytics: "Analytics", billing: "Billing", settings: "Settings" };
+  const tabLabels = { overview: "Overview", store: "My Store", research: "Product Research", calculator: "Profit Calculator", suppliers: "Supplier Comparison", scheduler: "Store Scheduler", invoices: "Invoice Generator", orders: "Orders", analytics: "Analytics", billing: "Billing" };
 
   const SidebarContent = () => (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflowY: "auto" }}>
@@ -1151,21 +1202,20 @@ const DashboardPage = ({ setPage }) => {
           </div>
         )}
 
-        {/* OVERVIEW */}
         {tab === "overview" && (
           <div>
             <h2 style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.3rem", color: "#f0f4f8", marginBottom: 4 }}>Good morning, {profile?.full_name?.split(" ")[0] || "Daniel"}</h2>
             <p style={{ color: "#6b7a8d", fontSize: "0.82rem", marginBottom: 20 }}>Here is what Dandrop can do for you today.</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-              {[[<SearchIc s={22} c="#00e5a0" />, "Product Research", "Find winning products using Google Trends", "research"],
-              [<DollarIc s={22} c="#00b8ff" />, "Profit Calculator", "Calculate your real profit per sale", "calculator"],
-              [<StoreIc s={22} c="#ffb800" />, "Compare Suppliers", "Find the best supplier for any product", "suppliers"],
-              [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Create professional branded invoices", "invoices"],
-              [<CalIc s={22} c="#00b8ff" />, "Store Scheduler", "Plan launches and promotions", "scheduler"],
-              [<BoxIc s={22} c="#6b7a8d" />, "Auto Fulfillment", "Coming soon — needs supplier API", null],
+              {[
+                [<LinkIc s={22} c="#00e5a0" />, "Connect Store", "Link your Shopify store to unlock real data", "store"],
+                [<SearchIc s={22} c="#00b8ff" />, "Product Research", "Find winning products with Google Trends", "research"],
+                [<DollarIc s={22} c="#ffb800" />, "Profit Calculator", "Calculate real profit per sale", "calculator"],
+                [<StoreIc s={22} c="#00e5a0" />, "Compare Suppliers", "Find the best supplier for any product", "suppliers"],
+                [<FileIc s={22} c="#00b8ff" />, "Invoice Generator", "Create professional branded invoices", "invoices"],
+                [<CalIc s={22} c="#ffb800" />, "Store Scheduler", "Plan launches and promotions", "scheduler"],
               ].map(([icon, title, desc, target]) => (
-                <div key={title} onClick={() => target && setTab(target)} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, cursor: target ? "pointer" : "default", opacity: target ? 1 : 0.5, position: "relative", overflow: "hidden" }}>
-                  {!target && <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(255,184,0,0.1)", color: "#ffb800", border: "1px solid rgba(255,184,0,0.2)", padding: "2px 7px", borderRadius: 100, fontSize: "0.64rem", fontWeight: 700 }}>Soon</div>}
+                <div key={title} onClick={() => setTab(target)} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, cursor: "pointer" }}>
                   <div style={{ marginBottom: 10 }}>{icon}</div>
                   <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.88rem", color: "#f0f4f8", marginBottom: 4 }}>{title}</div>
                   <div style={{ fontSize: "0.76rem", color: "#6b7a8d", lineHeight: 1.5 }}>{desc}</div>
@@ -1174,34 +1224,27 @@ const DashboardPage = ({ setPage }) => {
             </div>
             <div style={{ background: "#0e1318", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 14, padding: 18 }}>
               <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 8 }}>Get Started</div>
-              <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.6, marginBottom: 14 }}>Start by researching a product to see if it is worth selling, then calculate your profit before you invest.</p>
-              <button onClick={() => setTab("research")} style={{ ...S.btn, padding: "11px 0", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <SearchIc s={16} c="#000" />Research a Product Now
-              </button>
+              <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.6, marginBottom: 14 }}>Start by connecting your Shopify store or researching a product to see if it is worth selling.</p>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={() => setTab("store")} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <LinkIc s={16} c="#000" />Connect Store
+                </button>
+                <button onClick={() => setTab("research")} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <SearchIc s={16} />Research
+                </button>
+              </div>
             </div>
           </div>
         )}
 
+        {tab === "store" && <StoreConnectionTab profile={profile} setTab={setTab} />}
         {tab === "research" && <ProductResearchTab />}
         {tab === "calculator" && <ProfitCalculatorTab />}
         {tab === "suppliers" && <SupplierComparisonTab />}
         {tab === "invoices" && <InvoiceGeneratorTab profile={profile} />}
         {tab === "scheduler" && <SchedulerTab />}
-
-        {tab === "orders" && (
-          <ComingSoon
-            title="Auto Order Fulfillment"
-            icon={<BoxIc s={48} c="#6b7a8d" />}
-            desc="Automatic order fulfillment will be available once your supplier API is connected. You will be able to fulfill orders in one click."
-          />
-        )}
-        {tab === "analytics" && (
-          <ComingSoon
-            title="Analytics Dashboard"
-            icon={<ChartIc s={48} c="#6b7a8d" />}
-            desc="Deep analytics including revenue charts, profit trends and customer insights will be available once your Shopify store is connected."
-          />
-        )}
+        {tab === "orders" && <ComingSoon title="Auto Order Fulfillment" icon={<BoxIc s={48} c="#6b7a8d" />} desc="Automatic order fulfillment will be available once your supplier API is connected." />}
+        {tab === "analytics" && <ComingSoon title="Analytics Dashboard" icon={<ChartIc s={48} c="#6b7a8d" />} desc="Deep analytics with real data will be available once your Shopify store is connected." />}
 
         {tab === "billing" && (
           <div>
@@ -1209,7 +1252,7 @@ const DashboardPage = ({ setPage }) => {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <div style={{ fontWeight: 600, color: "#f0f4f8", marginBottom: 4, fontSize: "0.9rem" }}>{profile?.subscription ? profile.subscription.plans?.display_name + " Plan" : "Free Trial"}</div>
-                  <p style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{profile?.trialActive ? profile.daysLeft + " days left" : profile?.subscription ? "Active subscription" : "Trial expired"}</p>
+                  <p style={{ color: "#6b7a8d", fontSize: "0.8rem" }}>{profile?.trialActive ? profile.daysLeft + " days left" : profile?.subscription ? "Active" : "Expired"}</p>
                 </div>
                 {profile?.subscription && <button style={{ background: "transparent", color: "#f0f4f8", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 14px", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif" }}>Manage</button>}
               </div>
@@ -1221,14 +1264,14 @@ const DashboardPage = ({ setPage }) => {
 
       {/* Bottom Nav */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#0e1318", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-around", padding: "8px 0", zIndex: 40 }}>
-        {[["overview", "Home"], ["research", "Research"], ["calculator", "Profit"], ["invoices", "Invoice"]].map(([id, label]) => {
-          const icons = { overview: <HomeIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, research: <SearchIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, calculator: <DollarIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, invoices: <FileIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> };
-          return (
-            <button key={id} onClick={() => setTab(id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: tab === id ? "#00e5a0" : "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif", fontWeight: tab === id ? 600 : 400 }}>
-              {icons[id]}{label}
-            </button>
-          );
-        })}
+        {[["overview", "Home", <HomeIc />], ["store", "Store", <LinkIc />], ["research", "Research", <SearchIc />], ["invoices", "Invoice", <FileIc />]].map(([id, label, icon]) => (
+          <button key={id} onClick={() => setTab(id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: tab === id ? "#00e5a0" : "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif", fontWeight: tab === id ? 600 : 400 }}>
+            <span style={{ display: "flex" }}>
+              {id === "overview" ? <HomeIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : id === "store" ? <LinkIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : id === "research" ? <SearchIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : <FileIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />}
+            </span>
+            {label}
+          </button>
+        ))}
         <button onClick={() => setSidebarOpen(true)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif" }}>
           <MenuIc s={20} c="#6b7a8d" />More
         </button>
@@ -1237,7 +1280,7 @@ const DashboardPage = ({ setPage }) => {
   );
 };
 
-// ─── PUBLIC PAGES ─────────────────────────────
+// Public Pages
 const LandingPage = ({ setPage }) => (
   <div style={{ background: "#080b10" }}>
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "100px 20px 60px", position: "relative", overflow: "hidden" }}>
@@ -1267,12 +1310,13 @@ const LandingPage = ({ setPage }) => (
       <div style={{ fontFamily: "Syne,sans-serif", fontSize: "1.6rem", fontWeight: 800, letterSpacing: -0.5, marginBottom: 8, color: "#f0f4f8" }}>Everything your store needs</div>
       <p style={{ color: "#6b7a8d", marginBottom: 24, fontSize: "0.9rem" }}>Start using Dandrop today — no API required for core features.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {[[<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends. Know if it is worth selling before you invest.", true],
-        [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate real profit including supplier cost, shipping, ads and platform fees.", true],
-        [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers side by side to find the best price and delivery.", true],
-        [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Create professional branded invoices with preview and PDF download.", true],
-        [<CalIc s={22} c="#00e5a0" />, "Store Scheduler", "Plan product launches and promotions in advance.", true],
-        [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement and tracking. Coming soon.", false],
+        {[
+          [<LinkIc s={22} c="#00e5a0" />, "Shopify Store Connection", "Connect your store and pull real orders, revenue and profit automatically.", true],
+          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends. Know if it is worth selling.", true],
+          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate real profit including all fees and costs.", true],
+          [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers side by side.", true],
+          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Create professional branded invoices with PDF download.", true],
+          [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement. Coming soon.", false],
         ].map(([icon, title, desc, available]) => (
           <div key={title} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, display: "flex", gap: 16, alignItems: "flex-start", opacity: available ? 1 : 0.6 }}>
             <div style={{ width: 42, height: 42, background: available ? "rgba(0,229,160,0.08)" : "rgba(255,255,255,0.04)", border: available ? "1px solid rgba(0,229,160,0.13)" : "1px solid rgba(255,255,255,0.07)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
@@ -1319,14 +1363,15 @@ const FeaturesPage = ({ setPage }) => (
     <div style={{ padding: "40px 16px 60px" }}>
       <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 2, color: "#00e5a0", fontWeight: 600, marginBottom: 10 }}>Features</div>
       <h1 style={{ fontFamily: "Syne,sans-serif", fontSize: "1.8rem", fontWeight: 800, letterSpacing: -0.5, marginBottom: 10, color: "#f0f4f8" }}>Everything you need to win</h1>
-      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>Start using Dandrop today — 5 powerful tools that work right now.</p>
+      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>Start using Dandrop today — 6 powerful tools available now.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {[[<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product with Google Trends data. See if demand is rising or falling before you invest.", ["Google Trends scoring", "Winning score 0-100", "Profit margin preview", "Hot/Good/Avoid verdict"], true],
-        [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate exactly how much you make per sale after all costs.", ["Supplier and shipping costs", "Ad spend calculation", "Platform fee deduction", "ROI percentage"], true],
-        [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers and find the best one automatically.", ["Price comparison", "Delivery speed scoring", "Overall ranking", "Best choice highlighted"], true],
-        [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Create professional branded invoices with preview and PDF download.", ["Invoice preview before download", "Download as PDF", "Share link", "Your business branding"], true],
-        [<CalIc s={22} c="#00e5a0" />, "Store Scheduler", "Plan your store activities weeks in advance.", ["Product launch scheduling", "Sale and promotion planning", "Completion tracking", "Notes per event"], true],
-        [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement — coming when supplier API is connected.", ["Auto order placement", "Tracking updates", "Customer notifications", "Multi-supplier routing"], false],
+        {[
+          [<LinkIc s={22} c="#00e5a0" />, "Shopify Store Connection", "Connect your store to pull real orders, revenue and profit data automatically.", ["Real orders in dashboard", "Revenue and profit tracking", "Invoice from real orders", "Product management"], true],
+          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends data.", ["Google Trends scoring", "Winning score 0-100", "Profit margin preview", "Hot/Good/Avoid verdict"], true],
+          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate exactly how much you make per sale.", ["All costs included", "Platform fee calculation", "ROI percentage", "Save calculations"], true],
+          [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers and find the best one.", ["Price comparison", "Delivery speed scoring", "Overall ranking", "Best choice highlighted"], true],
+          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Professional branded invoices with preview and download.", ["Invoice preview", "Download as PDF", "Share link", "Your branding"], true],
+          [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement — coming when supplier API connected.", ["Auto order placement", "Tracking updates", "Customer notifications", "Multi-supplier routing"], false],
         ].map(([icon, title, desc, points, available]) => (
           <div key={title} style={{ background: "#0e1318", border: available ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(255,255,255,0.04)", borderRadius: 14, padding: 20, opacity: available ? 1 : 0.6 }}>
             <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14 }}>
@@ -1357,13 +1402,10 @@ const PricingPage = ({ setPage }) => (
     <div style={{ padding: "40px 16px 60px" }}>
       <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 2, color: "#00e5a0", fontWeight: 600, marginBottom: 10 }}>Pricing</div>
       <h1 style={{ fontFamily: "Syne,sans-serif", fontSize: "1.8rem", fontWeight: 800, letterSpacing: -0.5, marginBottom: 8, color: "#f0f4f8" }}>Simple, honest pricing</h1>
-      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>3-day free trial. No credit card required to start.</p>
+      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>3-day free trial. No credit card required.</p>
       <PricingCards setPage={setPage} />
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
-        {[[<CheckIc s={18} c="#00e5a0" />, "No hidden fees", "The price you see is what you pay."],
-        [<ArrowIc s={18} c="#00e5a0" />, "Cancel anytime", "No long-term contracts. Cancel whenever."],
-        [<ShieldIc s={18} c="#00e5a0" />, "Secure payments", "All payments processed securely."]
-        ].map(([icon, title, desc]) => (
+        {[[<CheckIc s={18} c="#00e5a0" />, "No hidden fees", "The price you see is what you pay."], [<ArrowIc s={18} c="#00e5a0" />, "Cancel anytime", "No long-term contracts."], [<ShieldIc s={18} c="#00e5a0" />, "Secure payments", "Processed securely. Card never stored."]].map(([icon, title, desc]) => (
           <div key={title} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, display: "flex", gap: 12, alignItems: "flex-start" }}>
             <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
             <div>
@@ -1393,10 +1435,7 @@ const AboutPage = ({ setPage }) => (
       </div>
       <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "1rem", color: "#f0f4f8", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}><UserIc s={16} c="#00e5a0" />The Team</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {[["D", "Daniel", "Founder & CEO", "Built Dandrop to solve the automation problem every dropshipper faces."],
-        ["A", "Alex M.", "Lead Engineer", "Full-stack developer obsessed with building fast and reliable systems."],
-        ["S", "Sara K.", "Head of Support", "Ex-dropshipper turned support lead. Knows exactly what sellers need."]
-        ].map(([init, name, role, bio]) => (
+        {[["D", "Daniel", "Founder & CEO", "Built Dandrop to solve the automation problem every dropshipper faces."], ["A", "Alex M.", "Lead Engineer", "Full-stack developer obsessed with building fast and reliable systems."], ["S", "Sara K.", "Head of Support", "Ex-dropshipper turned support lead. Knows exactly what sellers need."]].map(([init, name, role, bio]) => (
           <div key={name} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, display: "flex", gap: 14, alignItems: "flex-start" }}>
             <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#00e5a0,#00b8ff)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Syne,sans-serif", fontSize: "1.1rem", fontWeight: 800, color: "#000", flexShrink: 0 }}>{init}</div>
             <div>
@@ -1457,7 +1496,7 @@ const ContactPage = ({ setPage }) => {
   );
 };
 
-// ─── APP ROOT ─────────────────────────────────
+// App Root
 export default function App() {
   const [page, setPage] = useState("landing");
   return (
