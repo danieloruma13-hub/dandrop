@@ -8,7 +8,6 @@ const supabase = createClient(
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-// SVG Icons
 const Ic = ({ d, size = 20, color = "currentColor", fill = "none" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />
@@ -42,14 +41,12 @@ const BackIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M19
 const LinkIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />;
 const UnlinkIc = ({ s = 20, c = "currentColor" }) => <Ic size={s} color={c} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71 M1 1l22 22" />;
 
-// Plans
 const PLANS = [
   { name: "starter", display: "Starter", price: 19, popular: false, desc: "Perfect for new dropshippers", features: ["1 Shopify store", "10 product imports/day", "Basic supplier monitoring", "Auto order fulfillment", "Email customer updates", "Profit dashboard", "3-day free trial"] },
   { name: "pro", display: "Pro", price: 49, popular: true, desc: "For growing dropshippers", features: ["3 Shopify stores", "50 product imports/day", "Advanced supplier alerts", "Auto order fulfillment", "Email + SMS updates", "Weekly profit reports", "Store scheduler", "Competitor tracking", "Priority support", "3-day free trial"] },
   { name: "business", display: "Business", price: 99, popular: false, desc: "For serious sellers scaling fast", features: ["Unlimited stores", "Unlimited imports", "Real-time supplier monitoring", "Auto order fulfillment", "Email + SMS + WhatsApp", "Custom profit reports", "Store scheduler", "Multi-store dashboard", "API access", "Dedicated support", "3-day free trial"] },
 ];
 
-// Auth Context
 const AuthContext = createContext({});
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -102,7 +99,6 @@ const AuthProvider = ({ children }) => {
 };
 const useAuth = () => useContext(AuthContext);
 
-// Shared styles
 const S = {
   inp: { width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 14px", color: "#f0f4f8", fontFamily: "DM Sans,sans-serif", fontSize: "0.9rem", outline: "none", WebkitAppearance: "none", boxSizing: "border-box" },
   card: { background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 14 },
@@ -114,7 +110,6 @@ const S = {
   sub: { color: "#6b7a8d", fontSize: "0.82rem", marginBottom: 20 },
 };
 
-// Coming Soon Banner
 const ComingSoon = ({ title, icon, desc }) => (
   <div style={{ textAlign: "center", padding: "40px 20px" }}>
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>{icon}</div>
@@ -127,14 +122,12 @@ const ComingSoon = ({ title, icon, desc }) => (
   </div>
 );
 
-// Toggle
 const Toggle = ({ on, toggle }) => (
   <button onClick={toggle} style={{ width: 44, height: 24, borderRadius: 100, border: "none", cursor: "pointer", background: on ? "#00e5a0" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.3s", flexShrink: 0 }}>
     <span style={{ position: "absolute", width: 18, height: 18, borderRadius: "50%", background: "white", top: 3, left: on ? 23 : 3, transition: "left 0.3s", display: "block" }} />
   </button>
 );
 
-// Nav
 const Nav = ({ setPage }) => {
   const { user, profile, signOut } = useAuth();
   const [open, setOpen] = useState(false);
@@ -169,7 +162,6 @@ const Nav = ({ setPage }) => {
   );
 };
 
-// Pricing Cards
 const PricingCards = ({ setPage }) => {
   const { user } = useAuth();
   const go = (plan) => {
@@ -204,7 +196,6 @@ const PricingCards = ({ setPage }) => {
   );
 };
 
-// Auth Pages
 const SignupPage = ({ setPage }) => {
   const { signUp } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -288,53 +279,127 @@ const LoginPage = ({ setPage }) => {
   );
 };
 
-// Store Connection Tab
+const ProductsTab = () => {
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState("");
+  const [importing, setImporting] = useState(null);
+  const [imported, setImported] = useState([]);
+  const search = async () => {
+    if (!query) return;
+    setError(""); setLoading(true); setProducts([]);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const res = await fetch(`${API}/api/aliexpress/search?q=${encodeURIComponent(query)}`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Search failed"); setLoading(false); return; }
+      setProducts(data.products || []);
+      if ((data.products || []).length === 0) setError("No products found. Try a different keyword.");
+    } catch (err) { setError("Could not connect to server."); }
+    setLoading(false);
+  };
+  const importProduct = async (product) => {
+    setImporting(product.id);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const res = await fetch(`${API}/api/aliexpress/import`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ product }),
+      });
+      if (res.ok) setImported(prev => [...prev, product.id]);
+      else alert("Import failed. Connect your Shopify store first.");
+    } catch (err) { alert("Could not import. Make sure backend is running."); }
+    setImporting(null);
+  };
+  return (
+    <div>
+      <div style={S.heading}>AliExpress Products</div>
+      <p style={S.sub}>Search real products and import directly to your Shopify store.</p>
+      <div style={S.card}>
+        <div style={{ marginBottom: 14 }}>
+          <label style={S.label}>Search Products</label>
+          <input placeholder="e.g. wireless earbuds, phone case" value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && search()} style={S.inp} />
+        </div>
+        <button onClick={search} disabled={loading || !query} style={{ ...S.btn, opacity: loading || !query ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <SearchIc s={18} c="#000" />{loading ? "Searching AliExpress..." : "Search Products"}
+        </button>
+      </div>
+      {error && <div style={S.err}>{error}</div>}
+      {products.length > 0 && (
+        <div>
+          <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginBottom: 14 }}>Found {products.length} products for "{query}"</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {products.map(product => (
+              <div key={product.id} style={S.card}>
+                <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  {product.image && <img src={product.image} alt={product.title} style={{ width: 80, height: 80, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "#080b10" }} />}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: "0.86rem", fontWeight: 600, color: "#f0f4f8", marginBottom: 6, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{product.title}</div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 8, flexWrap: "wrap" }}>
+                      <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: "#00e5a0", fontSize: "1.1rem" }}>${product.price}</div>
+                      {product.rating && <div style={{ fontSize: "0.76rem", color: "#ffb800" }}>★ {product.rating}</div>}
+                      {product.orders && <div style={{ fontSize: "0.74rem", color: "#6b7a8d" }}>{product.orders} sold</div>}
+                    </div>
+                    {product.shipping && <div style={{ fontSize: "0.74rem", color: "#6b7a8d", marginBottom: 8 }}>Shipping: {product.shipping}</div>}
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {imported.includes(product.id) ? (
+                        <div style={{ flex: 1, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.2)", color: "#00e5a0", borderRadius: 8, padding: "8px 0", fontSize: "0.82rem", fontWeight: 600, textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                          <CheckIc s={14} c="#00e5a0" />Imported
+                        </div>
+                      ) : (
+                        <button onClick={() => importProduct(product)} disabled={importing === product.id} style={{ flex: 1, background: importing === product.id ? "rgba(0,229,160,0.3)" : "#00e5a0", color: "#000", border: "none", borderRadius: 8, padding: "8px 0", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                          <PlusIc s={14} c="#000" />{importing === product.id ? "Importing..." : "Import to Store"}
+                        </button>
+                      )}
+                      <a href={product.url} target="_blank" rel="noreferrer" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 8, padding: "8px 12px", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", textDecoration: "none", display: "flex", alignItems: "center" }}>View</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {products.length === 0 && !loading && !error && (
+        <div style={{ textAlign: "center", padding: "40px 0" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}><SearchIc s={40} c="#6b7a8d" /></div>
+          <div style={{ color: "#6b7a8d", fontSize: "0.86rem", marginBottom: 6 }}>Search for any product above</div>
+          <p style={{ color: "#6b7a8d", fontSize: "0.78rem", lineHeight: 1.6, maxWidth: 260, margin: "0 auto" }}>Find real AliExpress products and import them to your Shopify store.</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const StoreConnectionTab = ({ profile, setTab }) => {
   const [step, setStep] = useState("guide");
   const [form, setForm] = useState({ domain: "", token: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [stores, setStores] = useState([]);
-
   useEffect(() => { loadStores(); }, []);
-
   const getToken = async () => (await supabase.auth.getSession()).data.session?.access_token;
-
   const loadStores = async () => {
     try {
       const token = await getToken();
       const res = await fetch(`${API}/api/stores`, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.ok) {
-        const data = await res.json();
-        setStores(data.stores || []);
-        if (data.stores?.length > 0) setStep("connected");
-      }
+      if (res.ok) { const data = await res.json(); setStores(data.stores || []); if (data.stores?.length > 0) setStep("connected"); }
     } catch (err) {}
   };
-
   const connectStore = async () => {
     if (!form.domain || !form.token) { setError("Please fill in all fields"); return; }
     setError(""); setLoading(true);
     try {
       const token = await getToken();
-      const res = await fetch(`${API}/api/stores/connect`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          shopifyDomain: form.domain.replace("https://", "").replace("http://", "").trim(),
-          accessToken: form.token.trim(),
-        }),
-      });
+      const res = await fetch(`${API}/api/stores/connect`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ shopifyDomain: form.domain.replace("https://", "").replace("http://", "").trim(), accessToken: form.token.trim() }) });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Connection failed"); setLoading(false); return; }
-      setStores(prev => [...prev, data.store]);
-      setStep("connected");
-    } catch (err) {
-      setError("Could not connect. Make sure your backend is running.");
-    }
+      setStores(prev => [...prev, data.store]); setStep("connected");
+    } catch (err) { setError("Could not connect. Make sure your backend is running."); }
     setLoading(false);
   };
-
   const disconnectStore = async (storeId) => {
     try {
       const token = await getToken();
@@ -344,7 +409,6 @@ const StoreConnectionTab = ({ profile, setTab }) => {
       if (updated.length === 0) setStep("guide");
     } catch (err) {}
   };
-
   if (step === "guide") return (
     <div>
       <div style={S.heading}>Connect Your Store</div>
@@ -361,22 +425,10 @@ const StoreConnectionTab = ({ profile, setTab }) => {
       </div>
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 16 }}>How to get your Shopify access token:</div>
-        {[
-          { n: "1", title: "Log into your Shopify admin", desc: "Go to yourstore.myshopify.com/admin" },
-          { n: "2", title: "Go to Settings", desc: "Click Settings in the bottom left corner" },
-          { n: "3", title: "Click Apps and sales channels", desc: "Then click Develop apps at the top right" },
-          { n: "4", title: "Allow custom app development", desc: "Click Allow custom app development if prompted" },
-          { n: "5", title: "Create a new app", desc: 'Click Create an app — name it "Dandrop"' },
-          { n: "6", title: "Configure API scopes", desc: "Click Configure Admin API scopes and tick: read_orders, write_orders, read_products, write_products, read_inventory, write_inventory, read_fulfillments, write_fulfillments" },
-          { n: "7", title: "Install the app", desc: "Click Save, then Install app, then Install" },
-          { n: "8", title: "Copy your access token", desc: "Copy your Admin API access token — you only see it once!" },
-        ].map(s => (
+        {[{ n: "1", title: "Log into your Shopify admin", desc: "Go to yourstore.myshopify.com/admin" }, { n: "2", title: "Go to Settings", desc: "Click Settings in the bottom left corner" }, { n: "3", title: "Click Apps and sales channels", desc: "Then click Develop apps at the top right" }, { n: "4", title: "Allow custom app development", desc: "Click Allow custom app development if prompted" }, { n: "5", title: "Create a new app", desc: 'Click Create an app — name it "Dandrop"' }, { n: "6", title: "Configure API scopes", desc: "Tick: read_orders, write_orders, read_products, write_products, read_inventory, write_inventory, read_fulfillments, write_fulfillments" }, { n: "7", title: "Install the app", desc: "Click Save, then Install app, then Install" }, { n: "8", title: "Copy your access token", desc: "Copy your Admin API access token — you only see it once!" }].map(s => (
           <div key={s.n} style={{ display: "flex", gap: 14, marginBottom: 16, alignItems: "flex-start" }}>
             <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "0.82rem", color: "#00e5a0", flexShrink: 0 }}>{s.n}</div>
-            <div>
-              <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem", marginBottom: 3 }}>{s.title}</div>
-              <div style={{ color: "#6b7a8d", fontSize: "0.8rem", lineHeight: 1.6 }}>{s.desc}</div>
-            </div>
+            <div><div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem", marginBottom: 3 }}>{s.title}</div><div style={{ color: "#6b7a8d", fontSize: "0.8rem", lineHeight: 1.6 }}>{s.desc}</div></div>
           </div>
         ))}
       </div>
@@ -385,19 +437,14 @@ const StoreConnectionTab = ({ profile, setTab }) => {
       </button>
     </div>
   );
-
   if (step === "form") return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button onClick={() => setStep("guide")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}>
-          <BackIc s={16} />Back
-        </button>
+        <button onClick={() => setStep("guide")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}><BackIc s={16} />Back</button>
         <div style={S.heading}>Connect Your Store</div>
       </div>
       <div style={S.card}>
-        <div style={{ background: "rgba(0,184,255,0.06)", border: "1px solid rgba(0,184,255,0.15)", borderRadius: 10, padding: "10px 14px", marginBottom: 18, fontSize: "0.81rem", color: "#6b7a8d", lineHeight: 1.6 }}>
-          Make sure you followed all 8 steps and copied your access token before continuing.
-        </div>
+        <div style={{ background: "rgba(0,184,255,0.06)", border: "1px solid rgba(0,184,255,0.15)", borderRadius: 10, padding: "10px 14px", marginBottom: 18, fontSize: "0.81rem", color: "#6b7a8d", lineHeight: 1.6 }}>Make sure you followed all 8 steps and copied your access token before continuing.</div>
         {error && <div style={S.err}>{error}</div>}
         <div style={{ marginBottom: 14 }}>
           <label style={S.label}>Shopify Store Domain</label>
@@ -412,13 +459,10 @@ const StoreConnectionTab = ({ profile, setTab }) => {
         <button onClick={connectStore} disabled={loading} style={{ ...S.btn, opacity: loading ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           <LinkIc s={18} c="#000" />{loading ? "Connecting..." : "Connect Store"}
         </button>
-        <div style={{ background: "rgba(255,77,77,0.06)", border: "1px solid rgba(255,77,77,0.15)", borderRadius: 10, padding: "10px 14px", marginTop: 14, fontSize: "0.78rem", color: "#6b7a8d", lineHeight: 1.6 }}>
-          Your access token is stored securely. We never share it with anyone.
-        </div>
+        <div style={{ background: "rgba(255,77,77,0.06)", border: "1px solid rgba(255,77,77,0.15)", borderRadius: 10, padding: "10px 14px", marginTop: 14, fontSize: "0.78rem", color: "#6b7a8d", lineHeight: 1.6 }}>Your access token is stored securely. We never share it with anyone.</div>
       </div>
     </div>
   );
-
   return (
     <div>
       <div style={S.heading}>My Stores</div>
@@ -427,9 +471,7 @@ const StoreConnectionTab = ({ profile, setTab }) => {
         <div key={s.id || i} style={{ ...S.card, border: "1px solid rgba(0,229,160,0.2)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <StoreIc s={22} c="#00e5a0" />
-              </div>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}><StoreIc s={22} c="#00e5a0" /></div>
               <div>
                 <div style={{ fontWeight: 700, color: "#f0f4f8", fontSize: "0.92rem", marginBottom: 3 }}>{s.name || s.domain}</div>
                 <div style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>{s.domain || s.shopify_domain}</div>
@@ -447,9 +489,7 @@ const StoreConnectionTab = ({ profile, setTab }) => {
       <div style={S.card}>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 10 }}>Store connected successfully!</div>
         <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.7, marginBottom: 14 }}>Your store data is being synced. Check your Overview tab to see real orders and revenue.</p>
-        <button onClick={() => setTab("overview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <HomeIc s={16} c="#000" />Go to Overview
-        </button>
+        <button onClick={() => setTab("overview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><HomeIc s={16} c="#000" />Go to Overview</button>
       </div>
       {stores.length < 3 && (
         <button onClick={() => setStep("form")} style={{ background: "transparent", border: "1px solid rgba(0,229,160,0.3)", color: "#00e5a0", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
@@ -460,39 +500,31 @@ const StoreConnectionTab = ({ profile, setTab }) => {
   );
 };
 
-// Product Research Tab
 const ProductResearchTab = () => {
   const [keyword, setKeyword] = useState("");
   const [cost, setCost] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
-
   const research = async () => {
     if (!keyword) return;
     setLoading(true);
     try {
       const token = (await supabase.auth.getSession()).data.session?.access_token;
-      const res = await fetch(`${API}/api/trends/score`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productName: keyword, supplierCost: parseFloat(cost) || 10, shippingCost: 2 }),
-      });
+      const res = await fetch(`${API}/api/trends/score`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ productName: keyword, supplierCost: parseFloat(cost) || 10, shippingCost: 2 }) });
       const data = await res.json();
       setResult(data);
       setHistory(prev => [{ ...data, keyword, timestamp: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
     } catch (err) {
       const score = Math.floor(Math.random() * 60) + 20;
-      const mock = { productName: keyword, winningScore: score, isWinner: score >= 60, verdict: score >= 70 ? "Hot Product" : score >= 60 ? "Good Product" : score >= 40 ? "Average" : "Avoid", trendData: { trend: score > 60 ? "rising" : score > 40 ? "stable" : "falling", score }, margin: "35.0", recommendedPrice: ((parseFloat(cost) || 10) * 2.5).toFixed(2), profit: ((parseFloat(cost) || 10) * 1.5).toFixed(2) };
+      const mock = { productName: keyword, winningScore: score, verdict: score >= 70 ? "Hot Product" : score >= 60 ? "Good Product" : score >= 40 ? "Average" : "Avoid", trendData: { trend: score > 60 ? "rising" : score > 40 ? "stable" : "falling", score }, margin: "35.0", recommendedPrice: ((parseFloat(cost) || 10) * 2.5).toFixed(2), profit: ((parseFloat(cost) || 10) * 1.5).toFixed(2) };
       setResult(mock);
       setHistory(prev => [{ ...mock, timestamp: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
     }
     setLoading(false);
   };
-
   const verdictColor = { "Hot Product": "#00e5a0", "Good Product": "#00b8ff", "Average": "#ffb800", "Avoid": "#ff4d4d" };
   const trendColor = { rising: "#00e5a0", stable: "#ffb800", falling: "#ff4d4d" };
-
   return (
     <div>
       <div style={S.heading}>Product Research</div>
@@ -532,9 +564,7 @@ const ProductResearchTab = () => {
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: 12 }}>
             <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginBottom: 6 }}>Recommendation</div>
-            <div style={{ fontSize: "0.86rem", color: "#f0f4f8", lineHeight: 1.6 }}>
-              {result.winningScore >= 70 ? "Trending product with good profit potential. Consider adding to your store soon." : result.winningScore >= 60 ? "Shows promise. Do more research before committing." : result.winningScore >= 40 ? "Average product. Competition may be high." : "Declining demand. Avoid investing in this product."}
-            </div>
+            <div style={{ fontSize: "0.86rem", color: "#f0f4f8", lineHeight: 1.6 }}>{result.winningScore >= 70 ? "Trending product with good profit potential. Consider adding to your store soon." : result.winningScore >= 60 ? "Shows promise. Do more research before committing." : result.winningScore >= 40 ? "Average product. Competition may be high." : "Declining demand. Avoid investing in this product."}</div>
           </div>
         </div>
       )}
@@ -559,12 +589,9 @@ const ProductResearchTab = () => {
   );
 };
 
-// Profit Calculator Tab
 const ProfitCalculatorTab = () => {
   const [form, setForm] = useState({ cost: "", shipping: "", selling: "", ads: "", platform: "2.9" });
   const [result, setResult] = useState(null);
-  const [saved, setSaved] = useState([]);
-
   const calculate = () => {
     const cost = parseFloat(form.cost) || 0;
     const shipping = parseFloat(form.shipping) || 0;
@@ -577,9 +604,7 @@ const ProfitCalculatorTab = () => {
     const roi = totalCost > 0 ? ((profit / totalCost) * 100).toFixed(1) : 0;
     setResult({ cost, shipping, selling, ads, platformFee: platformFee.toFixed(2), totalCost: totalCost.toFixed(2), profit: profit.toFixed(2), margin, roi });
   };
-
   const profitColor = result && parseFloat(result.profit) > 0 ? "#00e5a0" : "#ff4d4d";
-
   return (
     <div>
       <div style={S.heading}>Profit Calculator</div>
@@ -602,9 +627,7 @@ const ProfitCalculatorTab = () => {
             <option value="0">No fee</option>
           </select>
         </div>
-        <button onClick={calculate} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <DollarIc s={18} c="#000" />Calculate Profit
-        </button>
+        <button onClick={calculate} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><DollarIc s={18} c="#000" />Calculate Profit</button>
       </div>
       {result && (
         <div style={{ ...S.card, border: `1px solid ${profitColor}33` }}>
@@ -638,11 +661,9 @@ const ProfitCalculatorTab = () => {
   );
 };
 
-// Supplier Comparison Tab
 const SupplierComparisonTab = () => {
   const [suppliers, setSuppliers] = useState([{ name: "Supplier A", price: "", shipping: "", days: "", moq: "1" }, { name: "Supplier B", price: "", shipping: "", days: "", moq: "1" }]);
   const [result, setResult] = useState(null);
-
   const compare = () => {
     const scored = suppliers.map(s => {
       const total = (parseFloat(s.price) || 0) + (parseFloat(s.shipping) || 0);
@@ -655,7 +676,6 @@ const SupplierComparisonTab = () => {
     const best = scored.reduce((a, b) => parseFloat(a.overall) > parseFloat(b.overall) ? a : b);
     setResult({ suppliers: scored, best: best.name });
   };
-
   return (
     <div>
       <div style={S.heading}>Supplier Comparison</div>
@@ -712,19 +732,16 @@ const SupplierComparisonTab = () => {
   );
 };
 
-// Invoice Generator Tab
 const InvoiceGeneratorTab = ({ profile }) => {
   const [step, setStep] = useState("form");
   const [business, setBusiness] = useState({ name: profile?.full_name || "My Store", email: "", address: "", phone: "" });
   const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", country: "" });
   const [items, setItems] = useState([{ description: "", qty: 1, price: "" }]);
   const [order, setOrder] = useState({ id: "INV-" + Date.now().toString().slice(-6), tracking: "", shipping: "0" });
-
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.qty) || 0), 0);
   const shipping = parseFloat(order.shipping) || 0;
   const total = subtotal + shipping;
   const invoiceDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
   const downloadPDF = () => {
     const content = document.getElementById("invoice-preview");
     const printWindow = window.open("", "_blank");
@@ -732,27 +749,19 @@ const InvoiceGeneratorTab = ({ profile }) => {
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 500);
   };
-
   const shareLink = () => {
     if (navigator.share) { navigator.share({ title: "Invoice " + order.id, text: "Invoice from " + business.name }); }
     else { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }
   };
-
   if (step === "preview") return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-        <button onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}>
-          <BackIc s={16} />Back
-        </button>
+        <button onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "DM Sans,sans-serif", fontSize: "0.86rem" }}><BackIc s={16} />Back</button>
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#f0f4f8" }}>Invoice Preview</div>
       </div>
       <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-        <button onClick={downloadPDF} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <DownloadIc s={16} c="#000" />Download PDF
-        </button>
-        <button onClick={shareLink} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <ShareIc s={16} />Share
-        </button>
+        <button onClick={downloadPDF} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><DownloadIc s={16} c="#000" />Download PDF</button>
+        <button onClick={shareLink} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><ShareIc s={16} />Share</button>
       </div>
       <div id="invoice-preview" style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, overflow: "hidden" }}>
         <div style={{ background: "#080b10", padding: "22px 22px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
@@ -798,12 +807,7 @@ const InvoiceGeneratorTab = ({ profile }) => {
         <div style={{ padding: "14px 22px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <div style={{ width: "55%" }}>
-              {shipping > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <div style={{ fontSize: "0.82rem", color: "#6b7a8d" }}>Shipping</div>
-                  <div style={{ fontSize: "0.82rem", color: "#f0f4f8" }}>${shipping.toFixed(2)}</div>
-                </div>
-              )}
+              {shipping > 0 && (<div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}><div style={{ fontSize: "0.82rem", color: "#6b7a8d" }}>Shipping</div><div style={{ fontSize: "0.82rem", color: "#f0f4f8" }}>${shipping.toFixed(2)}</div></div>)}
               <div style={{ display: "flex", justifyContent: "space-between", background: "#00e5a0", borderRadius: 8, padding: "9px 12px" }}>
                 <div style={{ fontWeight: 700, color: "#000", fontSize: "0.88rem" }}>TOTAL</div>
                 <div style={{ fontWeight: 800, color: "#000", fontFamily: "Syne,sans-serif", fontSize: "0.98rem" }}>${total.toFixed(2)}</div>
@@ -811,11 +815,7 @@ const InvoiceGeneratorTab = ({ profile }) => {
             </div>
           </div>
         </div>
-        {order.tracking && (
-          <div style={{ padding: "12px 22px", background: "rgba(0,229,160,0.04)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ fontSize: "0.76rem", color: "#6b7a8d" }}>Tracking: <span style={{ color: "#00e5a0", fontWeight: 600 }}>{order.tracking}</span></div>
-          </div>
-        )}
+        {order.tracking && (<div style={{ padding: "12px 22px", background: "rgba(0,229,160,0.04)", borderTop: "1px solid rgba(255,255,255,0.07)" }}><div style={{ fontSize: "0.76rem", color: "#6b7a8d" }}>Tracking: <span style={{ color: "#00e5a0", fontWeight: 600 }}>{order.tracking}</span></div></div>)}
         <div style={{ padding: "12px 22px", borderTop: "1px solid rgba(255,255,255,0.07)", textAlign: "center" }}>
           <div style={{ fontSize: "0.74rem", color: "#6b7a8d" }}>Thank you! Questions? {business.email}</div>
           <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.2)", marginTop: 3 }}>Powered by Dandrop</div>
@@ -823,7 +823,6 @@ const InvoiceGeneratorTab = ({ profile }) => {
       </div>
     </div>
   );
-
   return (
     <div>
       <div style={S.heading}>Invoice Generator</div>
@@ -832,10 +831,7 @@ const InvoiceGeneratorTab = ({ profile }) => {
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><StoreIc s={16} c="#00e5a0" />Your Business</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {[["Business Name", "name", "My Store"], ["Email", "email", "hello@mystore.com"], ["Address", "address", "123 Main St"], ["Phone", "phone", "+1 234 567 8900"]].map(([label, key, ph]) => (
-            <div key={key}>
-              <label style={S.label}>{label}</label>
-              <input placeholder={ph} value={business[key]} onChange={e => setBusiness({ ...business, [key]: e.target.value })} style={S.inp} />
-            </div>
+            <div key={key}><label style={S.label}>{label}</label><input placeholder={ph} value={business[key]} onChange={e => setBusiness({ ...business, [key]: e.target.value })} style={S.inp} /></div>
           ))}
         </div>
       </div>
@@ -843,22 +839,13 @@ const InvoiceGeneratorTab = ({ profile }) => {
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><UserIc s={16} c="#00e5a0" />Customer Details</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
           {[["Full Name", "name", "John Smith"], ["Email", "email", "john@email.com"]].map(([label, key, ph]) => (
-            <div key={key}>
-              <label style={S.label}>{label}</label>
-              <input placeholder={ph} value={customer[key]} onChange={e => setCustomer({ ...customer, [key]: e.target.value })} style={S.inp} />
-            </div>
+            <div key={key}><label style={S.label}>{label}</label><input placeholder={ph} value={customer[key]} onChange={e => setCustomer({ ...customer, [key]: e.target.value })} style={S.inp} /></div>
           ))}
         </div>
-        <div style={{ marginBottom: 10 }}>
-          <label style={S.label}>Address</label>
-          <input placeholder="Street address" value={customer.address} onChange={e => setCustomer({ ...customer, address: e.target.value })} style={S.inp} />
-        </div>
+        <div style={{ marginBottom: 10 }}><label style={S.label}>Address</label><input placeholder="Street address" value={customer.address} onChange={e => setCustomer({ ...customer, address: e.target.value })} style={S.inp} /></div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {[["City", "city", "New York"], ["Country", "country", "USA"]].map(([label, key, ph]) => (
-            <div key={key}>
-              <label style={S.label}>{label}</label>
-              <input placeholder={ph} value={customer[key]} onChange={e => setCustomer({ ...customer, [key]: e.target.value })} style={S.inp} />
-            </div>
+            <div key={key}><label style={S.label}>{label}</label><input placeholder={ph} value={customer[key]} onChange={e => setCustomer({ ...customer, [key]: e.target.value })} style={S.inp} /></div>
           ))}
         </div>
       </div>
@@ -870,18 +857,10 @@ const InvoiceGeneratorTab = ({ profile }) => {
               <div style={{ fontSize: "0.78rem", color: "#6b7a8d" }}>Item {i + 1}</div>
               {items.length > 1 && <button onClick={() => setItems(prev => prev.filter((_, idx) => idx !== i))} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}><TrashIc s={16} c="#ff4d4d" /></button>}
             </div>
-            <div style={{ marginBottom: 8 }}>
-              <input placeholder="Product name" value={item.description} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, description: e.target.value } : x))} style={S.inp} />
-            </div>
+            <div style={{ marginBottom: 8 }}><input placeholder="Product name" value={item.description} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, description: e.target.value } : x))} style={S.inp} /></div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <div>
-                <label style={S.label}>Qty</label>
-                <input type="number" value={item.qty} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, qty: e.target.value } : x))} style={S.inp} min="1" />
-              </div>
-              <div>
-                <label style={S.label}>Price ($)</label>
-                <input type="number" placeholder="0.00" value={item.price} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, price: e.target.value } : x))} style={S.inp} />
-              </div>
+              <div><label style={S.label}>Qty</label><input type="number" value={item.qty} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, qty: e.target.value } : x))} style={S.inp} min="1" /></div>
+              <div><label style={S.label}>Price ($)</label><input type="number" placeholder="0.00" value={item.price} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, price: e.target.value } : x))} style={S.inp} /></div>
             </div>
           </div>
         ))}
@@ -893,15 +872,9 @@ const InvoiceGeneratorTab = ({ profile }) => {
         <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}><FileIc s={16} c="#00e5a0" />Order Details</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {[["Invoice ID", "id", "INV-001"], ["Tracking Number", "tracking", "Optional"]].map(([label, key, ph]) => (
-            <div key={key}>
-              <label style={S.label}>{label}</label>
-              <input placeholder={ph} value={order[key]} onChange={e => setOrder({ ...order, [key]: e.target.value })} style={S.inp} />
-            </div>
+            <div key={key}><label style={S.label}>{label}</label><input placeholder={ph} value={order[key]} onChange={e => setOrder({ ...order, [key]: e.target.value })} style={S.inp} /></div>
           ))}
-          <div>
-            <label style={S.label}>Shipping Cost ($)</label>
-            <input type="number" placeholder="0.00" value={order.shipping} onChange={e => setOrder({ ...order, shipping: e.target.value })} style={S.inp} />
-          </div>
+          <div><label style={S.label}>Shipping Cost ($)</label><input type="number" placeholder="0.00" value={order.shipping} onChange={e => setOrder({ ...order, shipping: e.target.value })} style={S.inp} /></div>
           <div style={{ display: "flex", alignItems: "flex-end" }}>
             <div style={{ background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.15)", borderRadius: 10, padding: "12px 14px", width: "100%" }}>
               <div style={{ fontSize: "0.72rem", color: "#6b7a8d", marginBottom: 2 }}>Total</div>
@@ -910,30 +883,24 @@ const InvoiceGeneratorTab = ({ profile }) => {
           </div>
         </div>
       </div>
-      <button onClick={() => setStep("preview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-        <EyeIc s={18} c="#000" />Preview Invoice
-      </button>
+      <button onClick={() => setStep("preview")} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><EyeIc s={18} c="#000" />Preview Invoice</button>
     </div>
   );
 };
 
-// Store Scheduler Tab
 const SchedulerTab = () => {
   const [events, setEvents] = useState([{ id: 1, title: "Product Launch — Wireless Earbuds", date: "2025-06-15", type: "launch", status: "upcoming", notes: "Check stock before launching" }]);
   const [form, setForm] = useState({ title: "", date: "", type: "launch", notes: "" });
   const [adding, setAdding] = useState(false);
-
   const addEvent = () => {
     if (!form.title || !form.date) return;
     setEvents(prev => [...prev, { ...form, id: Date.now(), status: "upcoming" }]);
     setForm({ title: "", date: "", type: "launch", notes: "" });
     setAdding(false);
   };
-
   const typeColor = { launch: "#00e5a0", sale: "#00b8ff", restock: "#ffb800", pause: "#ff4d4d", other: "#6b7a8d" };
   const upcoming = events.filter(e => e.status === "upcoming").sort((a, b) => new Date(a.date) - new Date(b.date));
   const done = events.filter(e => e.status === "done");
-
   return (
     <div>
       <div style={S.heading}>Store Scheduler</div>
@@ -941,39 +908,19 @@ const SchedulerTab = () => {
       {adding ? (
         <div style={S.card}>
           <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>New Event</div>
-          <div style={{ marginBottom: 12 }}>
-            <label style={S.label}>Title</label>
-            <input placeholder="e.g. Product Launch" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={S.inp} />
-          </div>
+          <div style={{ marginBottom: 12 }}><label style={S.label}>Title</label><input placeholder="e.g. Product Launch" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={S.inp} /></div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
-            <div>
-              <label style={S.label}>Date</label>
-              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={S.inp} />
-            </div>
-            <div>
-              <label style={S.label}>Type</label>
-              <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={S.inp}>
-                <option value="launch">Product Launch</option>
-                <option value="sale">Sale / Promo</option>
-                <option value="restock">Restock</option>
-                <option value="pause">Pause Product</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+            <div><label style={S.label}>Date</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={S.inp} /></div>
+            <div><label style={S.label}>Type</label><select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={S.inp}><option value="launch">Product Launch</option><option value="sale">Sale / Promo</option><option value="restock">Restock</option><option value="pause">Pause Product</option><option value="other">Other</option></select></div>
           </div>
-          <div style={{ marginBottom: 14 }}>
-            <label style={S.label}>Notes</label>
-            <textarea placeholder="Any reminders..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...S.inp, minHeight: 70, resize: "vertical" }} />
-          </div>
+          <div style={{ marginBottom: 14 }}><label style={S.label}>Notes</label><textarea placeholder="Any reminders..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...S.inp, minHeight: 70, resize: "vertical" }} /></div>
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={addEvent} style={{ ...S.btn, flex: 2, padding: "11px 0" }}>Save Event</button>
             <button onClick={() => setAdding(false)} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.88rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif" }}>Cancel</button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setAdding(true)} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16 }}>
-          <PlusIc s={18} c="#000" />Add New Event
-        </button>
+        <button onClick={() => setAdding(true)} style={{ ...S.btn, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16 }}><PlusIc s={18} c="#000" />Add New Event</button>
       )}
       {upcoming.length > 0 && (
         <div style={S.card}>
@@ -1019,7 +966,6 @@ const SchedulerTab = () => {
   );
 };
 
-// Profile Page
 const ProfilePage = ({ setPage }) => {
   const { user, profile, updateProfile, signOut } = useAuth();
   const [form, setForm] = useState({ full_name: profile?.full_name || "", business_name: profile?.business_name || "", phone: profile?.phone || "" });
@@ -1040,10 +986,7 @@ const ProfilePage = ({ setPage }) => {
     const ext = file.name.split(".").pop();
     const path = "avatars/" + user.id + "." + ext;
     const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
-    if (!upErr) {
-      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-      await updateProfile({ avatar_url: data.publicUrl });
-    }
+    if (!upErr) { const { data } = supabase.storage.from("avatars").getPublicUrl(path); await updateProfile({ avatar_url: data.publicUrl }); }
   };
   return (
     <div style={{ paddingTop: 58, background: "#080b10", minHeight: "100vh" }}>
@@ -1076,10 +1019,7 @@ const ProfilePage = ({ setPage }) => {
               <input type={type} placeholder={ph} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} style={S.inp} />
             </div>
           ))}
-          <div style={{ marginBottom: 16 }}>
-            <label style={S.label}>Email Address</label>
-            <input value={user?.email || ""} disabled style={{ ...S.inp, opacity: 0.5, cursor: "not-allowed" }} />
-          </div>
+          <div style={{ marginBottom: 16 }}><label style={S.label}>Email Address</label><input value={user?.email || ""} disabled style={{ ...S.inp, opacity: 0.5, cursor: "not-allowed" }} /></div>
           <button onClick={save} disabled={saving} style={{ ...S.btn, opacity: saving ? 0.6 : 1 }}>{saving ? "Saving..." : "Save Changes"}</button>
         </div>
         <div style={S.card}>
@@ -1113,7 +1053,6 @@ const ProfilePage = ({ setPage }) => {
   );
 };
 
-// Paywall
 const PaywallPage = ({ setPage }) => (
   <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "80px 20px 40px", background: "#080b10" }}>
     <div style={{ textAlign: "center", maxWidth: 500, width: "100%" }}>
@@ -1125,7 +1064,6 @@ const PaywallPage = ({ setPage }) => (
   </div>
 );
 
-// Dashboard
 const DashboardPage = ({ setPage }) => {
   const { profile, signOut } = useAuth();
   const [tab, setTab] = useState("overview");
@@ -1136,6 +1074,7 @@ const DashboardPage = ({ setPage }) => {
   const navItems = [
     ["overview", <HomeIc />, "Overview"],
     ["store", <LinkIc />, "My Store"],
+    ["products", <BoxIc />, "AliExpress"],
     ["research", <SearchIc />, "Research"],
     ["calculator", <DollarIc />, "Calculator"],
     ["suppliers", <StoreIc />, "Suppliers"],
@@ -1145,7 +1084,7 @@ const DashboardPage = ({ setPage }) => {
     ["analytics", <ChartIc />, "Analytics"],
   ];
 
-  const tabLabels = { overview: "Overview", store: "My Store", research: "Product Research", calculator: "Profit Calculator", suppliers: "Supplier Comparison", scheduler: "Store Scheduler", invoices: "Invoice Generator", orders: "Orders", analytics: "Analytics", billing: "Billing" };
+  const tabLabels = { overview: "Overview", store: "My Store", products: "AliExpress Products", research: "Product Research", calculator: "Profit Calculator", suppliers: "Supplier Comparison", scheduler: "Store Scheduler", invoices: "Invoice Generator", orders: "Orders", analytics: "Analytics", billing: "Billing" };
 
   const SidebarContent = () => (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflowY: "auto" }}>
@@ -1201,7 +1140,6 @@ const DashboardPage = ({ setPage }) => {
             <button onClick={() => setPage("pricing")} style={{ background: "#00e5a0", color: "#000", border: "none", borderRadius: 8, padding: "6px 14px", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", flexShrink: 0 }}>Upgrade</button>
           </div>
         )}
-
         {tab === "overview" && (
           <div>
             <h2 style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.3rem", color: "#f0f4f8", marginBottom: 4 }}>Good morning, {profile?.full_name?.split(" ")[0] || "Daniel"}</h2>
@@ -1209,9 +1147,9 @@ const DashboardPage = ({ setPage }) => {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
               {[
                 [<LinkIc s={22} c="#00e5a0" />, "Connect Store", "Link your Shopify store to unlock real data", "store"],
-                [<SearchIc s={22} c="#00b8ff" />, "Product Research", "Find winning products with Google Trends", "research"],
-                [<DollarIc s={22} c="#ffb800" />, "Profit Calculator", "Calculate real profit per sale", "calculator"],
-                [<StoreIc s={22} c="#00e5a0" />, "Compare Suppliers", "Find the best supplier for any product", "suppliers"],
+                [<BoxIc s={22} c="#00b8ff" />, "AliExpress Products", "Search and import real products", "products"],
+                [<SearchIc s={22} c="#ffb800" />, "Product Research", "Find winning products with Google Trends", "research"],
+                [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate real profit per sale", "calculator"],
                 [<FileIc s={22} c="#00b8ff" />, "Invoice Generator", "Create professional branded invoices", "invoices"],
                 [<CalIc s={22} c="#ffb800" />, "Store Scheduler", "Plan launches and promotions", "scheduler"],
               ].map(([icon, title, desc, target]) => (
@@ -1224,20 +1162,20 @@ const DashboardPage = ({ setPage }) => {
             </div>
             <div style={{ background: "#0e1318", border: "1px solid rgba(0,229,160,0.2)", borderRadius: 14, padding: 18 }}>
               <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 8 }}>Get Started</div>
-              <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.6, marginBottom: 14 }}>Start by connecting your Shopify store or researching a product to see if it is worth selling.</p>
+              <p style={{ color: "#6b7a8d", fontSize: "0.84rem", lineHeight: 1.6, marginBottom: 14 }}>Connect your store or search AliExpress products to import to your store.</p>
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => setTab("store")} style={{ flex: 1, background: "#00e5a0", color: "#000", border: "none", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <LinkIc s={16} c="#000" />Connect Store
                 </button>
-                <button onClick={() => setTab("research")} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <SearchIc s={16} />Research
+                <button onClick={() => setTab("products")} style={{ flex: 1, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "11px 0", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <BoxIc s={16} />AliExpress
                 </button>
               </div>
             </div>
           </div>
         )}
-
         {tab === "store" && <StoreConnectionTab profile={profile} setTab={setTab} />}
+        {tab === "products" && <ProductsTab />}
         {tab === "research" && <ProductResearchTab />}
         {tab === "calculator" && <ProfitCalculatorTab />}
         {tab === "suppliers" && <SupplierComparisonTab />}
@@ -1245,7 +1183,6 @@ const DashboardPage = ({ setPage }) => {
         {tab === "scheduler" && <SchedulerTab />}
         {tab === "orders" && <ComingSoon title="Auto Order Fulfillment" icon={<BoxIc s={48} c="#6b7a8d" />} desc="Automatic order fulfillment will be available once your supplier API is connected." />}
         {tab === "analytics" && <ComingSoon title="Analytics Dashboard" icon={<ChartIc s={48} c="#6b7a8d" />} desc="Deep analytics with real data will be available once your Shopify store is connected." />}
-
         {tab === "billing" && (
           <div>
             <div style={S.card}>
@@ -1261,17 +1198,15 @@ const DashboardPage = ({ setPage }) => {
           </div>
         )}
       </div>
-
-      {/* Bottom Nav */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#0e1318", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "space-around", padding: "8px 0", zIndex: 40 }}>
-        {[["overview", "Home", <HomeIc />], ["store", "Store", <LinkIc />], ["research", "Research", <SearchIc />], ["invoices", "Invoice", <FileIc />]].map(([id, label, icon]) => (
-          <button key={id} onClick={() => setTab(id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: tab === id ? "#00e5a0" : "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif", fontWeight: tab === id ? 600 : 400 }}>
-            <span style={{ display: "flex" }}>
-              {id === "overview" ? <HomeIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : id === "store" ? <LinkIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : id === "research" ? <SearchIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> : <FileIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />}
-            </span>
-            {label}
-          </button>
-        ))}
+        {[["overview", "Home"], ["store", "Store"], ["products", "Products"], ["invoices", "Invoice"]].map(([id, label]) => {
+          const icons = { overview: <HomeIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, store: <LinkIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, products: <BoxIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} />, invoices: <FileIc s={20} c={tab === id ? "#00e5a0" : "#6b7a8d"} /> };
+          return (
+            <button key={id} onClick={() => setTab(id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: tab === id ? "#00e5a0" : "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif", fontWeight: tab === id ? 600 : 400 }}>
+              {icons[id]}{label}
+            </button>
+          );
+        })}
         <button onClick={() => setSidebarOpen(true)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 10px", background: "none", border: "none", cursor: "pointer", color: "#6b7a8d", fontSize: "0.65rem", fontFamily: "DM Sans,sans-serif" }}>
           <MenuIc s={20} c="#6b7a8d" />More
         </button>
@@ -1280,7 +1215,6 @@ const DashboardPage = ({ setPage }) => {
   );
 };
 
-// Public Pages
 const LandingPage = ({ setPage }) => (
   <div style={{ background: "#080b10" }}>
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "100px 20px 60px", position: "relative", overflow: "hidden" }}>
@@ -1291,7 +1225,7 @@ const LandingPage = ({ setPage }) => (
       <h1 style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "clamp(2rem,8vw,4.5rem)", lineHeight: 1.08, letterSpacing: -2, marginBottom: 18, color: "#f0f4f8" }}>
         Your Store on<br /><span style={{ background: "linear-gradient(135deg,#00e5a0,#00b8ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Full Autopilot</span>
       </h1>
-      <p style={{ color: "#6b7a8d", fontSize: "0.97rem", maxWidth: 420, marginBottom: 32, fontWeight: 300, lineHeight: 1.7 }}>Dandrop automates product research, supplier monitoring, order fulfillment and profit tracking — so you scale while you sleep.</p>
+      <p style={{ color: "#6b7a8d", fontSize: "0.97rem", maxWidth: 420, marginBottom: 32, fontWeight: 300, lineHeight: 1.7 }}>Dandrop automates product research, supplier monitoring, order fulfillment and profit tracking.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 320, marginBottom: 48 }}>
         <button onClick={() => setPage("signup")} style={{ ...S.btn, padding: "14px 0", borderRadius: 10, boxShadow: "0 0 40px rgba(0,229,160,0.2)" }}>Start Free Trial — 3 Days Free</button>
         <button onClick={() => setPage("features")} style={{ background: "transparent", color: "#f0f4f8", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "13px 0", fontWeight: 500, fontSize: "0.95rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>See Features <ArrowIc s={16} /></button>
@@ -1308,14 +1242,14 @@ const LandingPage = ({ setPage }) => (
     <div style={{ padding: "0 16px 60px" }}>
       <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 2, color: "#00e5a0", fontWeight: 600, marginBottom: 10 }}>Features</div>
       <div style={{ fontFamily: "Syne,sans-serif", fontSize: "1.6rem", fontWeight: 800, letterSpacing: -0.5, marginBottom: 8, color: "#f0f4f8" }}>Everything your store needs</div>
-      <p style={{ color: "#6b7a8d", marginBottom: 24, fontSize: "0.9rem" }}>Start using Dandrop today — no API required for core features.</p>
+      <p style={{ color: "#6b7a8d", marginBottom: 24, fontSize: "0.9rem" }}>Start using Dandrop today.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {[
           [<LinkIc s={22} c="#00e5a0" />, "Shopify Store Connection", "Connect your store and pull real orders, revenue and profit automatically.", true],
-          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends. Know if it is worth selling.", true],
-          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate real profit including all fees and costs.", true],
-          [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers side by side.", true],
-          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Create professional branded invoices with PDF download.", true],
+          [<BoxIc s={22} c="#00e5a0" />, "AliExpress Product Import", "Search millions of products and import directly to your Shopify store.", true],
+          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends.", true],
+          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate real profit including all fees.", true],
+          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Professional branded invoices with PDF download.", true],
           [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement. Coming soon.", false],
         ].map(([icon, title, desc, available]) => (
           <div key={title} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, display: "flex", gap: 16, alignItems: "flex-start", opacity: available ? 1 : 0.6 }}>
@@ -1363,15 +1297,15 @@ const FeaturesPage = ({ setPage }) => (
     <div style={{ padding: "40px 16px 60px" }}>
       <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 2, color: "#00e5a0", fontWeight: 600, marginBottom: 10 }}>Features</div>
       <h1 style={{ fontFamily: "Syne,sans-serif", fontSize: "1.8rem", fontWeight: 800, letterSpacing: -0.5, marginBottom: 10, color: "#f0f4f8" }}>Everything you need to win</h1>
-      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>Start using Dandrop today — 6 powerful tools available now.</p>
+      <p style={{ color: "#6b7a8d", fontSize: "0.88rem", marginBottom: 28 }}>6 powerful tools available right now.</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {[
-          [<LinkIc s={22} c="#00e5a0" />, "Shopify Store Connection", "Connect your store to pull real orders, revenue and profit data automatically.", ["Real orders in dashboard", "Revenue and profit tracking", "Invoice from real orders", "Product management"], true],
-          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score any product using Google Trends data.", ["Google Trends scoring", "Winning score 0-100", "Profit margin preview", "Hot/Good/Avoid verdict"], true],
-          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate exactly how much you make per sale.", ["All costs included", "Platform fee calculation", "ROI percentage", "Save calculations"], true],
-          [<StoreIc s={22} c="#00e5a0" />, "Supplier Comparison", "Compare up to 5 suppliers and find the best one.", ["Price comparison", "Delivery speed scoring", "Overall ranking", "Best choice highlighted"], true],
-          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Professional branded invoices with preview and download.", ["Invoice preview", "Download as PDF", "Share link", "Your branding"], true],
-          [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Automatic order placement — coming when supplier API connected.", ["Auto order placement", "Tracking updates", "Customer notifications", "Multi-supplier routing"], false],
+          [<LinkIc s={22} c="#00e5a0" />, "Shopify Connection", "Connect your store to pull real data.", ["Real orders in dashboard", "Revenue and profit tracking", "Invoice from real orders", "Product management"], true],
+          [<BoxIc s={22} c="#00e5a0" />, "AliExpress Products", "Search and import real products.", ["Search millions of products", "Real prices and ratings", "One click import to Shopify", "View on AliExpress"], true],
+          [<SearchIc s={22} c="#00e5a0" />, "Product Research", "Score products using Google Trends.", ["Google Trends scoring", "Winning score 0-100", "Profit margin preview", "Hot/Good/Avoid verdict"], true],
+          [<DollarIc s={22} c="#00e5a0" />, "Profit Calculator", "Calculate exactly how much you make.", ["All costs included", "Platform fee calculation", "ROI percentage", "Multiple platforms"], true],
+          [<FileIc s={22} c="#00e5a0" />, "Invoice Generator", "Professional branded invoices.", ["Invoice preview", "Download as PDF", "Share link", "Your branding"], true],
+          [<BoxIc s={22} c="#6b7a8d" />, "Auto Order Fulfillment", "Coming when supplier API connected.", ["Auto order placement", "Tracking updates", "Customer notifications", "Multi-supplier routing"], false],
         ].map(([icon, title, desc, points, available]) => (
           <div key={title} style={{ background: "#0e1318", border: available ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(255,255,255,0.04)", borderRadius: 14, padding: 20, opacity: available ? 1 : 0.6 }}>
             <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14 }}>
@@ -1496,7 +1430,6 @@ const ContactPage = ({ setPage }) => {
   );
 };
 
-// App Root
 export default function App() {
   const [page, setPage] = useState("landing");
   return (
