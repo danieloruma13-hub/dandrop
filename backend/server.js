@@ -16,6 +16,7 @@ const trendsRoutes = require('./routes/trends');
 const productRoutes = require('./routes/products');     // NEW
 const storeRoutes = require('./routes/stores');         // NEW
 const invoiceRoutes = require('./routes/invoices');     // NEW
+const aliexpressRoutes = require('./routes/aliexpress');
 
 // Jobs
 const { startMonitoringScheduler } = require('./jobs/monitorPrices'); // NEW
@@ -45,7 +46,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/trends', trendsRoutes);
 app.use('/api/products', productRoutes);   // NEW
 app.use('/api/stores', storeRoutes);       // NEW
-app.use('/api/invoices', invoiceRoutes);   // NEW
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/aliexpress', aliexpressRoutes);   // NEW
 
 // Global error handler
 app.use((err, req, res, next) => {
