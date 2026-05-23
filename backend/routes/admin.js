@@ -7,15 +7,18 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "danieloruma13@gmail.com";
 const adminAuth = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "No token" });
+    if (!token) return res.status(401).json({ error: "No token provided" });
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
     const { data: { user }, error } = await supabase.auth.getUser(token);
     if (error || !user) return res.status(401).json({ error: "Invalid token" });
-    if (user.email !== ADMIN_EMAIL) return res.status(403).json({ error: "Not authorized" });
+    console.log("Admin check — user email:", user.email, "| admin email:", ADMIN_EMAIL);
+    if (user.email.toLowerCase().trim() !== ADMIN_EMAIL.toLowerCase().trim()) {
+      return res.status(403).json({ error: "Not authorized. Your email: " + user.email });
+    }
     req.user = user;
     next();
   } catch (err) {
-    res.status(401).json({ error: "Auth failed" });
+    res.status(401).json({ error: "Auth failed: " + err.message });
   }
 };
 
