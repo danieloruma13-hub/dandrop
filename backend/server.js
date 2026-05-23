@@ -47,7 +47,8 @@ app.use('/api/trends', trendsRoutes);
 app.use('/api/products', productRoutes);   // NEW
 app.use('/api/stores', storeRoutes);       // NEW
 app.use('/api/invoices', invoiceRoutes);
-app.use('/api/aliexpress', aliexpressRoutes);   // NEW
+app.use('/api/aliexpress', aliexpressRoutes);
+app.use('/api/admin', require('./routes/admin'));   // NEW
 
 // Global error handler
 app.use((err, req, res, next) => {

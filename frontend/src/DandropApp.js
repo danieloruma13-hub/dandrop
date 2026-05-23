@@ -137,7 +137,10 @@ const Nav = ({ setPage }) => {
       <div onClick={() => { setPage("landing"); setOpen(false); }} style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.3rem", cursor: "pointer", color: "#f0f4f8" }}>Dan<span style={{ color: "#00e5a0" }}>drop</span></div>
       {user ? (
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <button onClick={() => setPage("dashboard")} style={{ background: "none", border: "none", color: "#6b7a8d", fontFamily: "DM Sans,sans-serif", fontSize: "0.85rem", cursor: "pointer", padding: "6px 10px" }}>Dashboard</button>
+              <button onClick={() => setPage("dashboard")} style={{ background: "none", border: "none", color: "#6b7a8d", fontFamily: "DM Sans,sans-serif", fontSize: "0.85rem", cursor: "pointer", padding: "6px 10px" }}>Dashboard</button>
+{profile?.email === "danieloruma13@gmail.com" && (
+  <button onClick={() => setPage("admin")} style={{ background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", color: "#00e5a0", borderRadius: 8, padding: "5px 10px", fontFamily: "DM Sans,sans-serif", fontSize: "0.78rem", fontWeight: 600, cursor: "pointer" }}>Admin</button>
+)}
           <div onClick={() => setPage("profile")} style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#00e5a0,#00b8ff)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "0.8rem", color: "#000", cursor: "pointer", overflow: "hidden", border: "2px solid rgba(0,229,160,0.3)" }}>
             {profile?.avatar_url ? <img src={profile.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials}
           </div>
@@ -240,6 +243,51 @@ const SignupPage = ({ setPage }) => {
     </div>
   );
 };
+const ForgotPasswordPage = ({ setPage }) => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const submit = async () => {
+    if (!email) { setError("Please enter your email"); return; }
+    setError(""); setLoading(true);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (err) { setError(err.message); return; }
+    setSent(true);
+  };
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "80px 20px 40px", background: "#080b10" }}>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <div onClick={() => setPage("landing")} style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.8rem", textAlign: "center", marginBottom: 4, cursor: "pointer", color: "#f0f4f8" }}>Dan<span style={{ color: "#00e5a0" }}>drop</span></div>
+        <p style={{ textAlign: "center", color: "#6b7a8d", fontSize: "0.82rem", marginBottom: 24 }}>Reset your password</p>
+        <div style={S.card}>
+          <div style={S.heading}>Forgot Password</div>
+          <p style={S.sub}>Enter your email and we will send you a reset link.</p>
+          {error && <div style={S.err}>{error}</div>}
+          {sent ? (
+            <div style={S.ok}>
+              Reset link sent to {email}! Check your inbox and spam folder.
+            </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: 16 }}>
+                <label style={S.label}>Email Address</label>
+                <input type="email" placeholder="daniel@email.com" value={email} onChange={e => setEmail(e.target.value)} style={S.inp} />
+              </div>
+              <button onClick={submit} disabled={loading} style={{ ...S.btn, opacity: loading ? 0.6 : 1 }}>{loading ? "Sending..." : "Send Reset Link"}</button>
+            </>
+          )}
+          <div style={{ textAlign: "center", marginTop: 16, fontSize: "0.83rem", color: "#6b7a8d" }}>
+            Remember your password? <button onClick={() => setPage("login")} style={{ background: "none", border: "none", color: "#00e5a0", cursor: "pointer", fontFamily: "DM Sans,sans-serif", fontSize: "0.83rem", fontWeight: 600 }}>Sign in</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const LoginPage = ({ setPage }) => {
   const { signIn } = useAuth();
@@ -269,6 +317,9 @@ const LoginPage = ({ setPage }) => {
               <input type={type} placeholder={ph} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} style={S.inp} />
             </div>
           ))}
+          <div style={{ textAlign: "right", marginBottom: 16 }}>
+            <button onClick={() => setPage("forgot")} style={{ background: "none", border: "none", color: "#6b7a8d", cursor: "pointer", fontFamily: "DM Sans,sans-serif", fontSize: "0.82rem" }}>Forgot password?</button>
+          </div>
           <button onClick={submit} disabled={loading} style={{ ...S.btn, opacity: loading ? 0.6 : 1 }}>{loading ? "Signing in..." : "Sign In"}</button>
           <div style={{ textAlign: "center", marginTop: 16, fontSize: "0.83rem", color: "#6b7a8d" }}>
             No account? <button onClick={() => setPage("signup")} style={{ background: "none", border: "none", color: "#00e5a0", cursor: "pointer", fontFamily: "DM Sans,sans-serif", fontSize: "0.83rem", fontWeight: 600 }}>Start free trial</button>
@@ -1429,6 +1480,145 @@ const ContactPage = ({ setPage }) => {
     </div>
   );
 };
+const AdminPage = ({ setPage }) => {
+  const { user, profile } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [extending, setExtending] = useState(null);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => { loadStats(); }, []);
+
+  const loadStats = async () => {
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const res = await fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Access denied"); setLoading(false); return; }
+      setStats(data);
+    } catch (err) { setError("Could not load admin data."); }
+    setLoading(false);
+  };
+
+  const extendTrial = async (userId, days) => {
+    setExtending(userId);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const res = await fetch(`${API}/api/admin/extend-trial`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ userId, days }),
+      });
+      if (res.ok) { await loadStats(); alert("Trial extended by " + days + " days!"); }
+    } catch (err) {}
+    setExtending(null);
+  };
+
+  const deleteUser = async (userId, email) => {
+    if (!window.confirm("Delete user " + email + "? This cannot be undone.")) return;
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      await fetch(`${API}/api/admin/user/${userId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      await loadStats();
+    } catch (err) {}
+  };
+
+  if (loading) return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#080b10" }}>
+      <div style={{ color: "#00e5a0", fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.2rem" }}>Loading admin...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#080b10", padding: 20 }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ color: "#ff4d4d", fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.2rem", marginBottom: 10 }}>Access Denied</div>
+        <div style={{ color: "#6b7a8d", fontSize: "0.86rem", marginBottom: 20 }}>{error}</div>
+        <button onClick={() => setPage("dashboard")} style={{ ...S.btn, maxWidth: 200, margin: "0 auto" }}>Go Back</button>
+      </div>
+    </div>
+  );
+
+  const filtered = (stats?.users || []).filter(u =>
+    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    u.full_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const statusColor = { paying: "#00e5a0", trial: "#ffb800", expired: "#ff4d4d" };
+
+  return (
+    <div style={{ paddingTop: 58, background: "#080b10", minHeight: "100vh" }}>
+      <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 16px 60px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#f0f4f8" }}>Admin Dashboard</div>
+            <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginTop: 3 }}>Welcome back, Daniel</div>
+          </div>
+          <button onClick={() => setPage("dashboard")} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "#f0f4f8", borderRadius: 10, padding: "8px 14px", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "DM Sans,sans-serif" }}>Dashboard</button>
+        </div>
+
+        {/* Stats Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+          {[
+            ["Total Users", stats?.totalUsers || 0, "#00e5a0"],
+            ["Active Trials", stats?.activeTrials || 0, "#ffb800"],
+            ["Paying Users", stats?.payingUsers || 0, "#00b8ff"],
+            ["New Today", stats?.newToday || 0, "#00e5a0"],
+            ["Expired Trials", stats?.expiredTrials || 0, "#ff4d4d"],
+            ["Monthly Revenue", "$" + (stats?.revenue || 0), "#00e5a0"],
+          ].map(([label, value, color]) => (
+            <div key={label} style={{ background: "#0e1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: "0.68rem", textTransform: "uppercase", letterSpacing: 1, color: "#6b7a8d", marginBottom: 6 }}>{label}</div>
+              <div style={{ fontFamily: "Syne,sans-serif", fontSize: "1.6rem", fontWeight: 800, color }}>{value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* User List */}
+        <div style={S.card}>
+          <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 700, fontSize: "0.95rem", color: "#f0f4f8", marginBottom: 14 }}>All Users ({stats?.totalUsers || 0})</div>
+          <div style={{ marginBottom: 14 }}>
+            <input placeholder="Search by name or email..." value={search} onChange={e => setSearch(e.target.value)} style={S.inp} />
+          </div>
+          {filtered.length === 0 && (
+            <div style={{ textAlign: "center", padding: "20px 0", color: "#6b7a8d", fontSize: "0.86rem" }}>No users found</div>
+          )}
+          {filtered.map(u => (
+            <div key={u.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                <div style={{ flex: 1, minWidth: 0, marginRight: 8 }}>
+                  <div style={{ fontWeight: 600, color: "#f0f4f8", fontSize: "0.88rem", marginBottom: 2 }}>{u.full_name || "No name"}</div>
+                  <div style={{ fontSize: "0.78rem", color: "#6b7a8d", marginBottom: 4 }}>{u.email}</div>
+                  {u.business_name && <div style={{ fontSize: "0.76rem", color: "#6b7a8d" }}>{u.business_name}</div>}
+                  <div style={{ fontSize: "0.72rem", color: "#6b7a8d", marginTop: 4 }}>Joined {new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <span style={{ background: statusColor[u.status] + "22", color: statusColor[u.status], border: `1px solid ${statusColor[u.status]}44`, padding: "3px 10px", borderRadius: 100, fontSize: "0.72rem", fontWeight: 700, display: "inline-block", marginBottom: 4 }}>
+                    {u.plan}
+                  </span>
+                  {u.trialActive && <div style={{ fontSize: "0.72rem", color: "#ffb800", marginTop: 2 }}>{u.daysLeft} days left</div>}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button onClick={() => extendTrial(u.id, 7)} disabled={extending === u.id} style={{ background: "rgba(0,229,160,0.1)", border: "1px solid rgba(0,229,160,0.2)", color: "#00e5a0", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: "0.76rem", fontFamily: "DM Sans,sans-serif", fontWeight: 600 }}>
+                  {extending === u.id ? "..." : "+7 Days"}
+                </button>
+                <button onClick={() => extendTrial(u.id, 30)} disabled={extending === u.id} style={{ background: "rgba(0,184,255,0.1)", border: "1px solid rgba(0,184,255,0.2)", color: "#00b8ff", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: "0.76rem", fontFamily: "DM Sans,sans-serif", fontWeight: 600 }}>
+                  {extending === u.id ? "..." : "+30 Days"}
+                </button>
+                <button onClick={() => deleteUser(u.id, u.email)} style={{ background: "rgba(255,77,77,0.1)", border: "1px solid rgba(255,77,77,0.2)", color: "#ff4d4d", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: "0.76rem", fontFamily: "DM Sans,sans-serif", fontWeight: 600 }}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 export default function App() {
   const [page, setPage] = useState("landing");
@@ -1457,7 +1647,7 @@ function AppInner({ page, setPage }) {
       <div style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: "1.4rem", color: "#00e5a0" }}>Loading...</div>
     </div>
   );
-  const pages = { landing: LandingPage, features: FeaturesPage, pricing: PricingPage, about: AboutPage, contact: ContactPage, signup: SignupPage, login: LoginPage };
+  const pages = { landing: LandingPage, features: FeaturesPage, pricing: PricingPage, about: AboutPage, contact: ContactPage, signup: SignupPage, login: LoginPage, forgot: ForgotPasswordPage, admin: AdminPage };
   const Page = pages[page];
   return (
     <>
