@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { createClient } = require("@supabase/supabase-js");
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "danieloruma13@gmail.com";
+const ADMIN_EMAIL = "danieloruma13@gmail.com";
 
 const adminAuth = async (req, res, next) => {
   try {
